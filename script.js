@@ -81,7 +81,6 @@
     const y = window.scrollY;
     state.scrollY = y;
     nav.classList.toggle('scrolled', y > 40);
-    hero.classList.toggle('bg-photo', y > 20);
 
     if (y < 10 && prevScrolled && !replaying) {
       replaying = true;
