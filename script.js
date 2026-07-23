@@ -116,8 +116,8 @@
     if (!modelVideo || !modelCanvas) return;
     const mctx = modelCanvas.getContext('2d', { willReadFrequently: true });
     let sized = false;
-    const CROP_RATIO = 0.66; // corta el reflejo/sombra inferior del video fuente
-    const FADE_BAND = 0.1; // últimos % del alto visible que se desvanece suavemente
+    const CROP_RATIO = 0.745; // corta justo donde termina la mandíbula, antes del reflejo
+    const FADE_BAND = 0.05; // últimos % del alto visible que se desvanece suavemente
 
     function sizeCanvas() {
       if (!modelVideo.videoWidth) return;
