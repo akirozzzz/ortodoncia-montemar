@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const WHATSAPP_NUMBER = '56912345678';
+  const WHATSAPP_NUMBER = '56920403095';
   const WHATSAPP_TEXT = encodeURIComponent('Hola, quiero reservar una hora en Centro Dental Dr. García');
   const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_TEXT}`;
 
