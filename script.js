@@ -161,7 +161,6 @@
   function openLogin() { loginModal.classList.add('open'); }
   function closeLoginFn() { loginModal.classList.remove('open'); }
   $('open-login-nav').addEventListener('click', openLogin);
-  $('open-login-footer').addEventListener('click', (e) => { e.preventDefault(); openLogin(); });
   $('close-login').addEventListener('click', closeLoginFn);
   $('submit-login').addEventListener('click', () => {
     closeLoginFn();
@@ -357,7 +356,6 @@
     renderStats();
   }
   function closeAdminFn() { adminOverlay.classList.remove('open'); }
-  $('open-admin-footer').addEventListener('click', (e) => { e.preventDefault(); openAdmin(); });
   $('close-admin').addEventListener('click', closeAdminFn);
 
   const tabButtons = document.querySelectorAll('.admin-tab-btn');
