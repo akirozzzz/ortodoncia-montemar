@@ -6,7 +6,8 @@
   "dependencies": {
     "@kapso/whatsapp-cloud-api": "^0.1.0",
     "fintoc": "^1.0.0",
-    "@vercel/kv": "^2.0.0",
+    "ioredis": "^5.4.1",
     "raw-body": "^2.5.2"
   }
 }
+
