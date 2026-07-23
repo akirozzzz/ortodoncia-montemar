@@ -62,7 +62,11 @@
   const $ = (id) => document.getElementById(id);
   const nav = $('nav');
   const hero = $('hero');
-  const heroBgNext = $('hero-bg-next');
+  const pinLayer1 = $('pin-layer-1');
+  const pinLayer2 = $('pin-layer-2');
+  const pinCloud = $('pin-cloud');
+  const heroScrollHint = $('hero-scroll-hint');
+  const authorityStats = $('authority-stats');
 
   $('hero-wa-link').href = WHATSAPP_LINK;
   $('wa-float-link').href = WHATSAPP_LINK;
@@ -83,10 +87,16 @@
     state.scrollY = y;
     nav.classList.toggle('scrolled', y > 40);
 
-    const heroFadeStart = window.innerHeight * 0.55;
-    const heroFadeEnd = window.innerHeight * 0.95;
-    const heroFadeProgress = Math.max(0, Math.min(1, (y - heroFadeStart) / (heroFadeEnd - heroFadeStart)));
-    heroBgNext.style.opacity = heroFadeProgress;
+    const hintRect = heroScrollHint.getBoundingClientRect();
+    const p1 = Math.max(0, Math.min(1, -hintRect.top / hintRect.height));
+    pinLayer1.style.opacity = p1;
+
+    const statsRect = authorityStats.getBoundingClientRect();
+    const p2 = Math.max(0, Math.min(1, -statsRect.top / statsRect.height));
+    pinLayer2.style.opacity = p2;
+
+    const cloudTriangle = (p) => Math.max(0, 1 - Math.abs(p - 0.5) * 2);
+    pinCloud.style.opacity = Math.max(cloudTriangle(p1), cloudTriangle(p2)) * 0.55;
 
     if (y < 10 && prevScrolled && !replaying) {
       replaying = true;
@@ -97,15 +107,6 @@
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
-
-  // ---------- Authority bg fade-in ----------
-  const authoritySection = $('authority');
-  const authorityObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) authoritySection.classList.add('in-view');
-    });
-  }, { threshold: 0.25 });
-  authorityObserver.observe(authoritySection);
 
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
