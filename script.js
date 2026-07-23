@@ -112,14 +112,19 @@
   (function () {
     const modelVideo = $('hero-model-source');
     const modelCanvas = $('hero-model-canvas');
+    const modelWrap = document.querySelector('.hero-model-cutout-wrap');
     if (!modelVideo || !modelCanvas) return;
     const mctx = modelCanvas.getContext('2d', { willReadFrequently: true });
     let sized = false;
+    const CROP_RATIO = 0.76; // corta el reflejo/sombra inferior del video fuente
+    const FADE_BAND = 0.18; // últimos % del alto visible que se desvanece suavemente
 
     function sizeCanvas() {
       if (!modelVideo.videoWidth) return;
+      const cropHeight = Math.round(modelVideo.videoHeight * CROP_RATIO);
       modelCanvas.width = modelVideo.videoWidth;
-      modelCanvas.height = modelVideo.videoHeight;
+      modelCanvas.height = cropHeight;
+      if (modelWrap) modelWrap.style.aspectRatio = `${modelVideo.videoWidth} / ${cropHeight}`;
       sized = true;
     }
     modelVideo.addEventListener('loadedmetadata', sizeCanvas);
@@ -127,13 +132,22 @@
     function drawFrame() {
       if (!sized) sizeCanvas();
       if (sized && modelVideo.readyState >= 2) {
-        mctx.drawImage(modelVideo, 0, 0, modelCanvas.width, modelCanvas.height);
-        const frame = mctx.getImageData(0, 0, modelCanvas.width, modelCanvas.height);
+        const w = modelCanvas.width, h = modelCanvas.height;
+        mctx.drawImage(modelVideo, 0, 0, w, h, 0, 0, w, h);
+        const frame = mctx.getImageData(0, 0, w, h);
         const d = frame.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
-          if (lum < 24) d[i + 3] = 0;
-          else if (lum < 60) d[i + 3] = Math.round(((lum - 24) / (60 - 24)) * 255);
+        const fadeStartRow = h * (1 - FADE_BAND);
+        for (let y = 0; y < h; y++) {
+          const rowFade = y > fadeStartRow ? Math.max(0, 1 - (y - fadeStartRow) / (h - fadeStartRow)) : 1;
+          const rowStart = y * w * 4;
+          for (let x = 0; x < w; x++) {
+            const i = rowStart + x * 4;
+            const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
+            let a = 255;
+            if (lum < 24) a = 0;
+            else if (lum < 60) a = Math.round(((lum - 24) / (60 - 24)) * 255);
+            d[i + 3] = Math.round(a * rowFade);
+          }
         }
         mctx.putImageData(frame, 0, 0);
       }
