@@ -94,48 +94,9 @@
       setTimeout(() => { openHero(); replaying = false; }, 350);
     }
     prevScrolled = y > 250;
-
-    updateStoryParallax();
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
-
-  // ---------- Story parallax ----------
-  const storySticky = $('story-sticky');
-  const storySection = document.getElementById('confianza');
-  const storyLayers = [$('story-layer-0'), $('story-layer-1'), $('story-layer-2')];
-  const storyTexts = [$('story-text-0'), $('story-text-1'), $('story-text-2')];
-
-  function storyProgress() {
-    const rect = storySection.getBoundingClientRect();
-    const total = rect.height - window.innerHeight;
-    if (total <= 0) return 0;
-    const p = (-rect.top) / total;
-    return Math.max(0, Math.min(1, p));
-  }
-
-  function updateStoryParallax() {
-    const progress = storyProgress();
-    const stage = Math.min(2, Math.floor(progress * 3));
-    const local = (progress * 3) - stage;
-    const fadeIn = Math.min(1, local * 3);
-    const fadeOut = 1 - Math.max(0, (local - 0.7) / 0.3);
-    const stageOpacity = Math.min(fadeIn, fadeOut);
-
-    const opacities = [
-      stage === 0 ? 1 : (stage === 1 && local < 0.3 ? 1 - local / 0.3 : 0),
-      stage === 1 ? 1 : (stage === 0 && local > 0.7 ? (local - 0.7) / 0.3 : (stage === 2 && local < 0.3 ? 1 - local / 0.3 : 0)),
-      stage === 2 ? 1 : (stage === 1 && local > 0.7 ? (local - 0.7) / 0.3 : 0)
-    ];
-
-    storyLayers.forEach((el, i) => { el.style.opacity = opacities[i]; });
-    storyTexts.forEach((el, i) => {
-      const active = stage === i;
-      el.style.opacity = active ? stageOpacity : 0;
-      el.style.transform = active ? 'translateY(0)' : 'translateY(16px)';
-    });
-  }
-  updateStoryParallax();
 
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
