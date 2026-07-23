@@ -98,6 +98,15 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
 
+  // ---------- Authority bg fade-in ----------
+  const authoritySection = $('authority');
+  const authorityObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) authoritySection.classList.add('in-view');
+    });
+  }, { threshold: 0.25 });
+  authorityObserver.observe(authoritySection);
+
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
   function openLogin() { loginModal.classList.add('open'); }
