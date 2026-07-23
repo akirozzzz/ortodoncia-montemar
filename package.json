@@ -1,0 +1,12 @@
+{
+  "name": "ortodoncia-montemar",
+  "private": true,
+  "version": "1.0.0",
+  "description": "El sitio (index.html/script.js/style.css) no necesita build. Este package.json es solo para que Vercel instale las dependencias que usan las funciones serverless en /api.",
+  "dependencies": {
+    "@kapso/whatsapp-cloud-api": "^0.1.0",
+    "fintoc": "^1.0.0",
+    "@vercel/kv": "^2.0.0",
+    "raw-body": "^2.5.2"
+  }
+}
