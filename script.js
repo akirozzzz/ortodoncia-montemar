@@ -62,6 +62,8 @@
   const $ = (id) => document.getElementById(id);
   const nav = $('nav');
   const hero = $('hero');
+  const playBtn = $('play-btn');
+  const playIconWrap = $('play-icon-wrap');
 
   $('hero-wa-link').href = WHATSAPP_LINK;
   $('wa-float-link').href = WHATSAPP_LINK;
@@ -93,6 +95,15 @@
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
+
+  // ---------- Video play/pause ----------
+  playBtn.addEventListener('click', () => {
+    state.videoPlaying = !state.videoPlaying;
+    playBtn.classList.toggle('playing', state.videoPlaying);
+    playIconWrap.innerHTML = state.videoPlaying
+      ? '<div class="icon-pause"><span></span><span></span></div>'
+      : '<div class="icon-play"></div>';
+  });
 
   // ---------- Story parallax ----------
   const storySticky = $('story-sticky');
