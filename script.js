@@ -108,6 +108,40 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
 
+  // ---------- Teeth model: real-time chroma-key (remove black background) ----------
+  (function () {
+    const modelVideo = $('hero-model-source');
+    const modelCanvas = $('hero-model-canvas');
+    if (!modelVideo || !modelCanvas) return;
+    const mctx = modelCanvas.getContext('2d', { willReadFrequently: true });
+    let sized = false;
+
+    function sizeCanvas() {
+      if (!modelVideo.videoWidth) return;
+      modelCanvas.width = modelVideo.videoWidth;
+      modelCanvas.height = modelVideo.videoHeight;
+      sized = true;
+    }
+    modelVideo.addEventListener('loadedmetadata', sizeCanvas);
+
+    function drawFrame() {
+      if (!sized) sizeCanvas();
+      if (sized && modelVideo.readyState >= 2) {
+        mctx.drawImage(modelVideo, 0, 0, modelCanvas.width, modelCanvas.height);
+        const frame = mctx.getImageData(0, 0, modelCanvas.width, modelCanvas.height);
+        const d = frame.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
+          if (lum < 24) d[i + 3] = 0;
+          else if (lum < 60) d[i + 3] = Math.round(((lum - 24) / (60 - 24)) * 255);
+        }
+        mctx.putImageData(frame, 0, 0);
+      }
+      requestAnimationFrame(drawFrame);
+    }
+    requestAnimationFrame(drawFrame);
+  })();
+
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
   function openLogin() { loginModal.classList.add('open'); }
