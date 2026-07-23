@@ -62,6 +62,7 @@
   const $ = (id) => document.getElementById(id);
   const nav = $('nav');
   const hero = $('hero');
+  const heroBgNext = $('hero-bg-next');
 
   $('hero-wa-link').href = WHATSAPP_LINK;
   $('wa-float-link').href = WHATSAPP_LINK;
@@ -81,6 +82,11 @@
     const y = window.scrollY;
     state.scrollY = y;
     nav.classList.toggle('scrolled', y > 40);
+
+    const heroFadeStart = window.innerHeight * 0.55;
+    const heroFadeEnd = window.innerHeight * 0.95;
+    const heroFadeProgress = Math.max(0, Math.min(1, (y - heroFadeStart) / (heroFadeEnd - heroFadeStart)));
+    heroBgNext.style.opacity = heroFadeProgress;
 
     if (y < 10 && prevScrolled && !replaying) {
       replaying = true;
