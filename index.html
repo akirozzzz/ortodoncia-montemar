@@ -50,7 +50,7 @@
         <h1 class="hero-title">Tu sonrisa, en las manos que <em>otros ya eligieron</em></h1>
         <p class="hero-desc">Cada mes aceptamos un número reducido de pacientes nuevos para garantizar el mismo nivel de atención que nos hizo confiables.</p>
         <div class="hero-ctas">
-          <a href="#planes" class="hero-cta-1">Ver planes y tarifas</a>
+          <a href="#planes" class="hero-cta-1" id="hero-cta-planes">Ver planes y tarifas</a>
           <a href="#" target="_blank" id="hero-wa-link" class="hero-cta-2">Reservar por WhatsApp</a>
         </div>
       </div>
@@ -67,6 +67,7 @@
         <div class="authority-eyebrow">Antes de decidir</div>
         <h2>Pregúntate cuántos ya lo intentaron <em>sin un plan claro.</em></h2>
         <p>El Dr. Robert lidera un equipo enfocado en diagnóstico digital, planificación por etapas y seguimiento medible. Nada de promesas vagas: cada paciente sabe exactamente qué esperar, cuándo y por qué.</p>
+        <button class="magic-shelf-btn" id="open-magic-shelf">✦ Ver planes especiales</button>
         <div class="authority-stats" id="authority-stats">
           <div><div class="authority-stat-num">+21</div><div class="authority-stat-label">años de trayectoria</div></div>
           <div><div class="authority-stat-num">Invisalign</div><div class="authority-stat-label">proveedor certificado</div></div>
@@ -96,6 +97,28 @@
       <div class="reviews-list" id="reviews-list"></div>
     </section>
   </div>
+
+  <!-- MAGIC SHELF: floating glass panel with special plans -->
+  <div class="magic-shelf-backdrop" id="magic-shelf-backdrop"></div>
+  <aside class="magic-shelf" id="magic-shelf">
+    <button class="magic-shelf-close" id="close-magic-shelf" aria-label="Cerrar">✕</button>
+    <div class="magic-shelf-inner">
+      <div class="magic-shelf-eyebrow">Planes especiales</div>
+      <h3 class="magic-shelf-title">Un plan para cada etapa</h3>
+      <div class="magic-shelf-grid">
+        <div class="magic-drop" style="--hue:206"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>2 integrantes</span></div></div>
+        <div class="magic-drop" style="--hue:198"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>3 integrantes</span></div></div>
+        <div class="magic-drop" style="--hue:190"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>4 integrantes</span></div></div>
+        <div class="magic-drop" style="--hue:182"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>5+ integrantes</span></div></div>
+        <div class="magic-drop" style="--hue:230"><div class="magic-drop-img"></div><div class="magic-drop-label">Adulto mayor<br><span>Esencial</span></div></div>
+        <div class="magic-drop" style="--hue:222"><div class="magic-drop-img"></div><div class="magic-drop-label">Adulto mayor<br><span>Integral</span></div></div>
+        <div class="magic-drop" style="--hue:170"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Básico</span></div></div>
+        <div class="magic-drop" style="--hue:162"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Universitario</span></div></div>
+        <div class="magic-drop" style="--hue:154"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Intercambio</span></div></div>
+        <div class="magic-drop" style="--hue:214"><div class="magic-drop-img"></div><div class="magic-drop-label">Multifamiliar<br><span>Convenio grupal</span></div></div>
+      </div>
+    </div>
+  </aside>
 
   <!-- WHATSAPP FLOATING BUTTON -->
   <a href="#" target="_blank" id="wa-float-link" class="wa-button">

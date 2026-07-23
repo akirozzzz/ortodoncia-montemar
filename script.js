@@ -65,7 +65,7 @@
   const pinLayer1 = $('pin-layer-1');
   const pinLayer2 = $('pin-layer-2');
   const pinCloud = $('pin-cloud');
-  const heroScrollHint = $('hero-scroll-hint');
+  const heroCtaPlanes = $('hero-cta-planes');
   const authorityStats = $('authority-stats');
 
   $('hero-wa-link').href = WHATSAPP_LINK;
@@ -87,8 +87,8 @@
     state.scrollY = y;
     nav.classList.toggle('scrolled', y > 40);
 
-    const hintRect = heroScrollHint.getBoundingClientRect();
-    const p1 = Math.max(0, Math.min(1, -hintRect.top / hintRect.height));
+    const ctaRect = heroCtaPlanes.getBoundingClientRect();
+    const p1 = Math.max(0, Math.min(1, -ctaRect.top / ctaRect.height));
     pinLayer1.style.opacity = p1;
 
     const statsRect = authorityStats.getBoundingClientRect();
@@ -154,6 +154,20 @@
       requestAnimationFrame(drawFrame);
     }
     requestAnimationFrame(drawFrame);
+  })();
+
+  // ---------- Magic shelf (planes especiales) ----------
+  (function () {
+    const shelf = $('magic-shelf');
+    const backdrop = $('magic-shelf-backdrop');
+    const openBtn = $('open-magic-shelf');
+    const closeBtn = $('close-magic-shelf');
+    if (!shelf || !backdrop || !openBtn || !closeBtn) return;
+    function openShelf() { shelf.classList.add('open'); backdrop.classList.add('open'); }
+    function closeShelf() { shelf.classList.remove('open'); backdrop.classList.remove('open'); }
+    openBtn.addEventListener('click', openShelf);
+    closeBtn.addEventListener('click', closeShelf);
+    backdrop.addEventListener('click', closeShelf);
   })();
 
   // ---------- Login modal ----------
