@@ -305,7 +305,7 @@ img{display:block;max-width:100%;}
 .contacto-row-label{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:2px;}
 .contacto-row-value{font-size:14.5px;color:#fdfdfe;line-height:1.5;}
 .contacto-row-value a{color:#fdfdfe;}
-.contacto-photos{display:grid;grid-template-columns:1fr 1fr;gap:14px;height:180px;}
+.contacto-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;height:180px;}
 .contacto-photos img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);}
 
 /* FOOTER */
