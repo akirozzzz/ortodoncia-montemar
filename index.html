@@ -110,16 +110,16 @@
   <section class="clinica" id="clinica">
     <div class="clinica-inner">
       <div class="section-head reveal">
-        <div class="section-eyebrow">La clínica</div>
-        <h2>Un espacio pensado para <em>la calma.</em></h2>
-        <p>Cada sala mira al mar. Cada detalle está pensado para que el tratamiento se sienta tan cuidado como el resultado.</p>
+        <div class="section-eyebrow">Nuestro espacio</div>
+        <h2>Un solo lugar, con <em>vista al mar.</em></h2>
+        <p>Nuestra consulta está dividida en dos ambientes: la recepción y la sala de atención, ambas con vista a las dunas y el mar.</p>
       </div>
       <div class="clinica-grid">
         <div class="clinica-photo tall reveal">
-          <img src="uploads/hero-consulta-mar.png" alt="Sala de consulta con vista al mar">
+          <img src="uploads/hero-consulta-mar.png" alt="Sala de atención con vista a las dunas y el mar">
           <div class="clinica-caption glass-card">
-            <div class="clinica-caption-title">Salas con vista al mar</div>
-            <div class="clinica-caption-text">Consulta y diagnóstico en un ambiente luminoso y tranquilo.</div>
+            <div class="clinica-caption-title">Vista a las dunas y el mar</div>
+            <div class="clinica-caption-text">Sala de atención, luminosa y tranquila.</div>
           </div>
         </div>
         <div class="clinica-col">
@@ -155,25 +155,33 @@
           <h2>Resultados <em>estéticos</em>, seguimiento cercano.</h2>
           <p>Combinamos brackets estéticos y alineadores Invisalign según tu caso, con controles mensuales y planificación digital desde el primer diagnóstico.</p>
 
-          <div class="brackets-types">
-            <div class="brackets-type-row">
-              <div>
-                <div class="brackets-type-name">Brackets estéticos</div>
-                <div class="brackets-type-desc">Discretos, tratamiento integral con control mensual</div>
+          <!-- Tarjetas clicables: al hacer clic se abre el detalle con imagen ampliada.
+               Imágenes de referencia mientras se suman fotos reales de cada tipo de bracket (ej. zafiro). -->
+          <div class="brackets-cards">
+            <button type="button" class="brackets-card reveal" data-plan="brackets" data-title="Brackets estéticos" data-detail="Discretos y resistentes: ideales para quienes buscan un tratamiento integral con control mensual, sin que se note tanto como los brackets metálicos tradicionales." data-img="uploads/u6528489736_close_up_portrait_of_confident_smiling_patient_na_72fe1c4c-10f8-4395-abbf-24a84ddc9be6_1.png">
+              <div class="brackets-card-img"><img src="uploads/u6528489736_close_up_portrait_of_confident_smiling_patient_na_72fe1c4c-10f8-4395-abbf-24a84ddc9be6_1.png" alt="Brackets estéticos"></div>
+              <div class="brackets-card-body">
+                <div class="brackets-card-name">Brackets estéticos</div>
+                <div class="brackets-card-desc">Discretos, tratamiento integral con control mensual</div>
+                <div class="brackets-card-more">Ver detalle →</div>
               </div>
-            </div>
-            <div class="brackets-type-row">
-              <div>
-                <div class="brackets-type-name">Invisalign Expert</div>
-                <div class="brackets-type-desc">Alineadores transparentes, resultados predecibles</div>
+            </button>
+            <button type="button" class="brackets-card reveal reveal-delay-1" data-plan="invisalign" data-title="Invisalign Expert" data-detail="Alineadores transparentes y removibles, planificados digitalmente desde el primer diagnóstico. Prácticamente invisibles, con resultados predecibles etapa por etapa." data-img="uploads/u6528489736_extreme_macro_of_perfect_smile_with_clear_aligner_6c00fb66-eebe-40c1-9965-ea3cc1d03b14_2.png">
+              <div class="brackets-card-img"><img src="uploads/u6528489736_extreme_macro_of_perfect_smile_with_clear_aligner_6c00fb66-eebe-40c1-9965-ea3cc1d03b14_2.png" alt="Invisalign Expert"></div>
+              <div class="brackets-card-body">
+                <div class="brackets-card-name">Invisalign Expert</div>
+                <div class="brackets-card-desc">Alineadores transparentes, resultados predecibles</div>
+                <div class="brackets-card-more">Ver detalle →</div>
               </div>
-            </div>
-            <div class="brackets-type-row">
-              <div>
-                <div class="brackets-type-name">Ortodoncia infantil</div>
-                <div class="brackets-type-desc">Diagnóstico temprano y guía del desarrollo facial</div>
+            </button>
+            <button type="button" class="brackets-card reveal reveal-delay-2" data-plan="kids" data-title="Ortodoncia infantil" data-detail="Diagnóstico temprano y guía del desarrollo facial en niños y niñas, para anticiparse a problemas antes de que sigan creciendo." data-img="uploads/u6528489736_dental_team_consulting_with_patient_in_bright_mod_401e88e2-2ee3-4c14-8489-b4918aa925bd_0.png">
+              <div class="brackets-card-img"><img src="uploads/u6528489736_dental_team_consulting_with_patient_in_bright_mod_401e88e2-2ee3-4c14-8489-b4918aa925bd_0.png" alt="Ortodoncia infantil"></div>
+              <div class="brackets-card-body">
+                <div class="brackets-card-name">Ortodoncia infantil</div>
+                <div class="brackets-card-desc">Diagnóstico temprano y guía del desarrollo facial</div>
+                <div class="brackets-card-more">Ver detalle →</div>
               </div>
-            </div>
+            </button>
           </div>
 
           <div class="brackets-price-row">
@@ -193,8 +201,8 @@
   <section id="testimonios" class="testimonios">
     <div class="testimonios-inner">
       <div class="section-head reveal">
-        <div class="section-eyebrow">Reseñas verificadas</div>
-        <h2>Solo de pacientes con <em>hora confirmada.</em></h2>
+        <div class="section-eyebrow">Testimonios</div>
+        <h2>Lo que dicen <em>nuestros pacientes.</em></h2>
       </div>
       <div class="reviews-list reveal" id="reviews-list"></div>
     </div>
@@ -211,8 +219,8 @@
       </div>
       <div class="contacto-layout">
         <div class="contacto-map reveal">
-          <!-- TODO: reemplazar por la dirección real de la clínica -->
-          <iframe src="https://www.google.com/maps?q=Montemar,+Conc%C3%B3n,+Chile&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Ortodoncia Montemar"></iframe>
+          <!-- TODO: confirmar número/piso exacto del Boulevard Montemar -->
+          <iframe src="https://www.google.com/maps?q=Boulevard+Montemar,+Conc%C3%B3n,+Chile&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Ortodoncia Montemar"></iframe>
         </div>
         <div class="contacto-side reveal reveal-delay-1">
           <div class="contacto-card">
@@ -221,7 +229,7 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-6.1-7-11.3A7 7 0 0 1 19 9.7C19 15 12 21 12 21z" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg>
               <div>
                 <div class="contacto-row-label">Dirección</div>
-                <div class="contacto-row-value">Av. Borgoño, Montemar, Concón</div>
+                <div class="contacto-row-value">Boulevard Montemar, Concón</div>
               </div>
             </div>
             <div class="contacto-row">
@@ -345,6 +353,17 @@
           <button class="success-done-btn" id="close-booking-success">Listo</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- BRACKET DETAIL MODAL -->
+  <div class="modal-overlay bracket-detail-overlay" id="bracket-detail-modal">
+    <div class="modal-card bracket-detail-card">
+      <button class="modal-close" id="close-bracket-detail">✕</button>
+      <div class="bracket-detail-img"><img id="bracket-detail-img" src="" alt=""></div>
+      <div class="modal-title" id="bracket-detail-title"></div>
+      <p class="modal-sub" id="bracket-detail-desc"></p>
+      <button class="modal-submit-btn" id="bracket-detail-cta">Cotizar este tratamiento</button>
     </div>
   </div>
 

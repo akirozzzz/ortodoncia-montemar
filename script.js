@@ -172,6 +172,25 @@
   $('hero-cta-agendar').addEventListener('click', () => openBooking('brackets'));
   $('brackets-cotizar-btn').addEventListener('click', () => openBooking('brackets'));
 
+  // ---------- Brackets: detalle al hacer clic en cada tarjeta ----------
+  const bracketDetailModal = $('bracket-detail-modal');
+  function openBracketDetail(ds) {
+    $('bracket-detail-img').src = ds.img;
+    $('bracket-detail-img').alt = ds.title;
+    $('bracket-detail-title').textContent = ds.title;
+    $('bracket-detail-desc').textContent = ds.detail;
+    $('bracket-detail-cta').onclick = () => {
+      closeBracketDetailFn();
+      openBooking(ds.plan);
+    };
+    bracketDetailModal.classList.add('open');
+  }
+  function closeBracketDetailFn() { bracketDetailModal.classList.remove('open'); }
+  $('close-bracket-detail').addEventListener('click', closeBracketDetailFn);
+  document.querySelectorAll('.brackets-card').forEach(card => {
+    card.addEventListener('click', () => openBracketDetail(card.dataset));
+  });
+
   // ---------- Reviews ----------
   const reviewsList = $('reviews-list');
   function renderReviews() {
@@ -180,7 +199,7 @@
       <div class="review-card">
         <div class="review-top">
           <div class="review-name">${r.name}</div>
-          <div class="review-meta">PACIENTE VERIFICADO · ${r.date}</div>
+          <div class="review-meta">${r.date}</div>
         </div>
         <div class="review-stars">${stars(r.rating)}</div>
         <p class="review-text">${r.text}</p>
@@ -425,7 +444,7 @@
       return { text: 'Sí — la Ortodoncia Infantil está pensada para diagnóstico temprano y guía del desarrollo facial, desde $180.000.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
     }
     if (q.includes('tipo de brackets') || q.includes('qué brackets') || q.includes('que brackets')) {
-      return { text: 'Trabajamos con Brackets Estéticos (discretos, control mensual) e Invisalign Expert (alineadores transparentes). Ambos con planificación digital desde el diagnóstico.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
+      return { text: 'Trabajamos con Brackets Estéticos, Invisalign Expert y Ortodoncia Infantil. Puedes ver el detalle y precio de cada uno tocando su tarjeta en la sección Brackets.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
     }
     return { text: 'Buena pregunta — nuestro equipo puede responderte en detalle por WhatsApp ahora mismo.', cta: 'Escribir por WhatsApp', action: () => window.open(WHATSAPP_LINK, '_blank') };
   }
