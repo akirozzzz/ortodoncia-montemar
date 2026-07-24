@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ortodoncia Montemar</title>
-<meta name="description" content="Ortodoncia Montemar — Invisalign, brackets estéticos y ortodoncia infantil. Reserva tu hora en línea.">
+<meta name="description" content="Ortodoncia Montemar — Invisalign, brackets estéticos y ortodoncia infantil frente al mar. Reserva tu hora en línea.">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -15,110 +15,266 @@
   <nav class="nav" id="nav">
     <div class="nav-logo">Ortodoncia Montemar</div>
     <div class="nav-links">
-      <a href="#planes" class="nav-link">Planes</a>
-      <a href="#resenas" class="nav-link">Reseñas</a>
+      <a href="#brackets" class="nav-link">Brackets</a>
+      <a href="#testimonios" class="nav-link">Reseñas</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
       <button class="nav-login-btn" id="open-login-nav">Portal de pacientes</button>
     </div>
   </nav>
 
-  <!-- PINNED BACKGROUND (hero + authority) -->
-  <div class="pin-wrap" id="pin-wrap">
-    <div class="pin-bg" id="pin-bg">
-      <img class="pin-bg-layer" data-layer="0" src="uploads/hero-consulta-mar.png" alt="Sala de consulta con vista al mar">
-      <img class="pin-bg-layer" id="pin-layer-1" data-layer="1" src="uploads/u6528489736_dental_team_consulting_with_patient_in_bright_mod_952d9fee-356b-43ce-a1ee-d3c061dc3420_0.png" alt="Doctor consultando con paciente en clínica luminosa">
-      <img class="pin-bg-layer" id="pin-layer-2" data-layer="2" src="uploads/hero-chair-mar-closeup.png" alt="Sillón dental frente a vista al mar">
-      <div class="pin-cloud-veil" id="pin-cloud"></div>
-      <div class="pin-overlay"></div>
+  <!-- ============================================================
+       HERO — minimalista: foto fija + poco texto + chat centrado
+       ============================================================ -->
+  <section class="hero" id="hero">
+    <img class="hero-photo" src="uploads/hero-chair-mar-closeup.png" alt="Sillón dental con vista al mar en Ortodoncia Montemar">
+    <div class="hero-scrim"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">Ortodoncia Montemar · Frente al mar</div>
+      <h1 class="hero-title">Tu sonrisa, con la calma del mar</h1>
+      <p class="hero-subtitle">Diagnóstico digital y atención exclusiva en Concón.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-solid-light" id="hero-cta-agendar">Agendar hora</button>
+        <a href="#brackets" class="btn btn-outline-light">Cotizar tratamiento</a>
+      </div>
+
+      <!-- CHAT — punto principal de interacción del hero (interfaz lista para IA real) -->
+      <div class="hero-chat" id="hero-chat">
+        <div class="hero-chat-head">
+          <span class="hero-chat-dot"></span>
+          <span>Asistente de Ortodoncia Montemar</span>
+        </div>
+        <p class="hero-chat-prompt" id="chat-prompt">¿Qué te gustaría saber sobre tu tratamiento de ortodoncia?</p>
+
+        <div class="chat-log" id="chat-log"></div>
+
+        <div class="chat-suggestions" id="chat-suggestions">
+          <button class="chat-chip" data-q="Quiero cotizar brackets">Quiero cotizar brackets</button>
+          <button class="chat-chip" data-q="¿Cuánto demora un tratamiento?">¿Cuánto demora un tratamiento?</button>
+          <button class="chat-chip" data-q="Quiero agendar una evaluación">Quiero agendar una evaluación</button>
+          <button class="chat-chip" data-q="¿Atienden niños?">¿Atienden niños?</button>
+          <button class="chat-chip" data-q="¿Qué tipo de brackets ofrecen?">¿Qué tipo de brackets ofrecen?</button>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Escribe tu pregunta...">
+          <button class="chat-send" id="chat-send" aria-label="Enviar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12l16-8-6 8 6 8-16-8z" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- HERO -->
-    <section class="hero" id="hero">
-      <div class="curtain-panel"><img src="uploads/u6528489736_modern_dental_clinic_entrance_minimalist_white_ar_297eee6a-cc15-4e45-bfd7-c4306ca59ca4_1.png" alt="Entrada de clínica moderna"></div>
-      <div class="curtain-panel"><img src="uploads/u6528489736_close_up_portrait_of_confident_smiling_patient_na_72fe1c4c-10f8-4395-abbf-24a84ddc9be6_1.png" alt="Retrato de paciente sonriendo"></div>
-      <div class="curtain-panel"><img src="uploads/u6528489736_macro_shot_of_clear_dental_aligner_futuristic_blu_b97af963-d8b3-4004-a106-2916e39dda8d_1.png" alt="Macro de alineador Invisalign"></div>
-      <div class="curtain-panel"><img src="uploads/u6528489736__dentist_hands_holding_modern_dental_instrument_s_78ec7cb3-44ab-428e-967a-d1e4f68da308_1.png" alt="Manos de dentista con instrumento moderno"></div>
+    <div class="hero-scroll-hint">
+      <div>Desliza para continuar</div>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
 
-      <div class="hero-model-cutout-wrap">
-        <video class="hero-model-cutout-source" id="hero-model-source" autoplay loop muted playsinline>
-          <source src="uploads/hero-3d-model.mp4" type="video/mp4">
-        </video>
-        <canvas class="hero-model-cutout-canvas" id="hero-model-canvas"></canvas>
+  <!-- ============================================================
+       BENEFICIOS
+       ============================================================ -->
+  <section class="beneficios" id="beneficios">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Por qué Montemar</div>
+      <h2>Diagnóstico claro, <em>resultados medibles.</em></h2>
+      <p>El Dr. Robert lidera un equipo enfocado en diagnóstico digital y planificación por etapas. Cada paciente sabe exactamente qué esperar, cuándo y por qué.</p>
+    </div>
+    <div class="beneficios-grid">
+      <div class="beneficio-card reveal">
+        <svg class="beneficio-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.4"/></svg>
+        <div class="beneficio-num">12+</div>
+        <div class="beneficio-label">Años de trayectoria</div>
       </div>
+      <div class="beneficio-card reveal reveal-delay-1">
+        <svg class="beneficio-icon" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="beneficio-num">Invisalign</div>
+        <div class="beneficio-label">Proveedor certificado</div>
+      </div>
+      <div class="beneficio-card reveal reveal-delay-2">
+        <svg class="beneficio-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <div class="beneficio-num">Cupos</div>
+        <div class="beneficio-label">Limitados por mes</div>
+      </div>
+      <div class="beneficio-card reveal reveal-delay-3">
+        <svg class="beneficio-icon" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="4" stroke="currentColor" stroke-width="1.4"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <div class="beneficio-num">100%</div>
+        <div class="beneficio-label">Pago en línea seguro</div>
+      </div>
+    </div>
+  </section>
 
-      <div class="hero-copy">
-        <div class="hero-eyebrow">Cupos limitados este mes</div>
-        <h1 class="hero-title">Tu sonrisa, en las manos que <em>otros ya eligieron</em></h1>
-        <p class="hero-desc">Cada mes aceptamos un número reducido de pacientes nuevos para garantizar el mismo nivel de atención que nos hizo confiables.</p>
-        <div class="hero-ctas">
-          <a href="#planes" class="hero-cta-1" id="hero-cta-planes">Ver planes y tarifas</a>
-          <a href="#" target="_blank" id="hero-wa-link" class="hero-cta-2">Reservar por WhatsApp</a>
+  <!-- ============================================================
+       CLÍNICA — imágenes fijas, sin fundidos
+       ============================================================ -->
+  <section class="clinica" id="clinica">
+    <div class="clinica-inner">
+      <div class="section-head reveal">
+        <div class="section-eyebrow">La clínica</div>
+        <h2>Un espacio pensado para <em>la calma.</em></h2>
+        <p>Cada sala mira al mar. Cada detalle está pensado para que el tratamiento se sienta tan cuidado como el resultado.</p>
+      </div>
+      <div class="clinica-grid">
+        <div class="clinica-photo tall reveal">
+          <img src="uploads/hero-consulta-mar.png" alt="Sala de consulta con vista al mar">
+          <div class="clinica-caption glass-card">
+            <div class="clinica-caption-title">Salas con vista al mar</div>
+            <div class="clinica-caption-text">Consulta y diagnóstico en un ambiente luminoso y tranquilo.</div>
+          </div>
+        </div>
+        <div class="clinica-col">
+          <div class="clinica-photo short reveal reveal-delay-1">
+            <img src="uploads/u6528489736_modern_dental_clinic_entrance_minimalist_white_ar_297eee6a-cc15-4e45-bfd7-c4306ca59ca4_1.png" alt="Entrada de la clínica, diseño minimalista">
+          </div>
+          <div class="clinica-photo short reveal reveal-delay-2">
+            <img src="uploads/u6528489736__dentist_hands_holding_modern_dental_instrument_s_78ec7cb3-44ab-428e-967a-d1e4f68da308_1.png" alt="Instrumental moderno de última generación">
+          </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="hero-scroll-hint" id="hero-scroll-hint">
-        <div>Desliza para continuar</div>
-        <div class="hero-scroll-line"></div>
-      </div>
-    </section>
+  <!-- ============================================================
+       BRACKETS — modelo 3D + composición elegante
+       ============================================================ -->
+  <section class="brackets" id="brackets">
+    <div class="brackets-inner">
+      <div class="brackets-layout">
+        <div class="brackets-visual reveal">
+          <div class="brackets-model-wrap">
+            <video autoplay loop muted playsinline>
+              <source src="uploads/hero-3d-model.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="brackets-photo-float">
+            <img src="uploads/u6528489736_close_up_portrait_of_confident_smiling_patient_na_72fe1c4c-10f8-4395-abbf-24a84ddc9be6_1.png" alt="Paciente sonriendo con confianza tras su tratamiento">
+          </div>
+        </div>
+        <div class="brackets-copy reveal reveal-delay-1">
+          <div class="section-eyebrow">Brackets</div>
+          <h2>Resultados <em>estéticos</em>, seguimiento cercano.</h2>
+          <p>Combinamos brackets estéticos y alineadores Invisalign según tu caso, con controles mensuales y planificación digital desde el primer diagnóstico.</p>
 
-    <!-- AUTHORITY / DOCTOR -->
-    <section class="authority" id="authority">
-      <div class="authority-content">
-        <div class="authority-eyebrow">Antes de decidir</div>
-        <h2>Pregúntate cuántos ya lo intentaron <em>sin un plan claro.</em></h2>
-        <p>El Dr. Robert lidera un equipo enfocado en diagnóstico digital, planificación por etapas y seguimiento medible. Nada de promesas vagas: cada paciente sabe exactamente qué esperar, cuándo y por qué.</p>
-        <button class="magic-shelf-btn" id="open-magic-shelf">✦ Ver planes especiales</button>
-        <div class="authority-stats" id="authority-stats">
-          <div><div class="authority-stat-num">+21</div><div class="authority-stat-label">años de trayectoria</div></div>
-          <div><div class="authority-stat-num">Invisalign</div><div class="authority-stat-label">proveedor certificado</div></div>
-          <div><div class="authority-stat-num">Cupos</div><div class="authority-stat-label">limitados por mes</div></div>
+          <div class="brackets-types">
+            <div class="brackets-type-row">
+              <div>
+                <div class="brackets-type-name">Brackets estéticos</div>
+                <div class="brackets-type-desc">Discretos, tratamiento integral con control mensual</div>
+              </div>
+            </div>
+            <div class="brackets-type-row">
+              <div>
+                <div class="brackets-type-name">Invisalign Expert</div>
+                <div class="brackets-type-desc">Alineadores transparentes, resultados predecibles</div>
+              </div>
+            </div>
+            <div class="brackets-type-row">
+              <div>
+                <div class="brackets-type-name">Ortodoncia infantil</div>
+                <div class="brackets-type-desc">Diagnóstico temprano y guía del desarrollo facial</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="brackets-price-row">
+            <span class="brackets-price-label">Planes desde</span>
+            <span class="brackets-price-value">$180.000</span>
+          </div>
+
+          <button class="btn btn-solid-light" id="brackets-cotizar-btn">Cotizar mi tratamiento</button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- PLANS -->
-    <section id="planes" class="plans-section">
-      <div class="plans-inner">
-        <div class="section-head">
-          <div class="section-eyebrow">Planes y tarifas</div>
-          <h2>Quienes actúan a tiempo, <em>terminan más rápido.</em></h2>
-          <p>Pago 100% en línea, seguro y trazable. Sin letra chica.</p>
-        </div>
-        <div class="plans-grid" id="plans-grid"></div>
-      </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section id="resenas" class="reviews-section">
-      <div class="section-head">
+  <!-- ============================================================
+       TESTIMONIOS
+       ============================================================ -->
+  <section id="testimonios" class="testimonios">
+    <div class="testimonios-inner">
+      <div class="section-head reveal">
         <div class="section-eyebrow">Reseñas verificadas</div>
-        <h2>Solo de pacientes con hora confirmada.</h2>
+        <h2>Solo de pacientes con <em>hora confirmada.</em></h2>
       </div>
-      <div class="reviews-list" id="reviews-list"></div>
-    </section>
-  </div>
+      <div class="reviews-list reveal" id="reviews-list"></div>
+    </div>
+  </section>
 
-  <!-- MAGIC SHELF: floating glass panel with special plans -->
-  <div class="magic-shelf-backdrop" id="magic-shelf-backdrop"></div>
-  <aside class="magic-shelf" id="magic-shelf">
-    <button class="magic-shelf-close" id="close-magic-shelf" aria-label="Cerrar">✕</button>
-    <div class="magic-shelf-inner">
-      <div class="magic-shelf-eyebrow">Planes especiales</div>
-      <h3 class="magic-shelf-title">Un plan para cada etapa</h3>
-      <div class="magic-shelf-grid">
-        <div class="magic-drop" style="--hue:206"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>2 integrantes</span></div></div>
-        <div class="magic-drop" style="--hue:198"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>3 integrantes</span></div></div>
-        <div class="magic-drop" style="--hue:190"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>4 integrantes</span></div></div>
-        <div class="magic-drop" style="--hue:182"><div class="magic-drop-img"></div><div class="magic-drop-label">Familiar<br><span>5+ integrantes</span></div></div>
-        <div class="magic-drop" style="--hue:230"><div class="magic-drop-img"></div><div class="magic-drop-label">Adulto mayor<br><span>Esencial</span></div></div>
-        <div class="magic-drop" style="--hue:222"><div class="magic-drop-img"></div><div class="magic-drop-label">Adulto mayor<br><span>Integral</span></div></div>
-        <div class="magic-drop" style="--hue:170"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Básico</span></div></div>
-        <div class="magic-drop" style="--hue:162"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Universitario</span></div></div>
-        <div class="magic-drop" style="--hue:154"><div class="magic-drop-img"></div><div class="magic-drop-label">Estudiante<br><span>Intercambio</span></div></div>
-        <div class="magic-drop" style="--hue:214"><div class="magic-drop-img"></div><div class="magic-drop-label">Multifamiliar<br><span>Convenio grupal</span></div></div>
+  <!-- ============================================================
+       CONTACTO + GOOGLE MAPS
+       ============================================================ -->
+  <section class="contacto" id="contacto">
+    <div class="contacto-inner">
+      <div class="section-head on-dark reveal">
+        <div class="section-eyebrow">Visítanos</div>
+        <h2>Te esperamos <em>frente al mar.</em></h2>
+      </div>
+      <div class="contacto-layout">
+        <div class="contacto-map reveal">
+          <!-- TODO: reemplazar por la dirección real de la clínica -->
+          <iframe src="https://www.google.com/maps?q=Montemar,+Conc%C3%B3n,+Chile&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Ortodoncia Montemar"></iframe>
+        </div>
+        <div class="contacto-side reveal reveal-delay-1">
+          <div class="contacto-card">
+            <div class="contacto-card-title">Datos de contacto</div>
+            <div class="contacto-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-6.1-7-11.3A7 7 0 0 1 19 9.7C19 15 12 21 12 21z" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg>
+              <div>
+                <div class="contacto-row-label">Dirección</div>
+                <div class="contacto-row-value">Av. Borgoño, Montemar, Concón</div>
+              </div>
+            </div>
+            <div class="contacto-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.33A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" stroke-width="1.4"/><path d="M8.5 8.5c0 5 4 8 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <div>
+                <div class="contacto-row-label">WhatsApp</div>
+                <div class="contacto-row-value"><a href="#" target="_blank" id="contacto-wa-link">Escribir por WhatsApp</a></div>
+              </div>
+            </div>
+            <div class="contacto-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <div>
+                <div class="contacto-row-label">Horario</div>
+                <div class="contacto-row-value">Lun a Vie · 09:00–19:00</div>
+              </div>
+            </div>
+          </div>
+          <div class="contacto-photos">
+            <img src="uploads/u6528489736_dental_team_consulting_with_patient_in_bright_mod_401e88e2-2ee3-4c14-8489-b4918aa925bd_0.png" alt="Equipo clínico consultando con paciente">
+            <img src="uploads/u6528489736_dental_team_consulting_with_patient_in_bright_mod_952d9fee-356b-43ce-a1ee-d3c061dc3420_0.png" alt="Consulta en sala luminosa">
+          </div>
+        </div>
       </div>
     </div>
-  </aside>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Ortodoncia Montemar</div>
+        <p class="footer-desc">Cada semana sin diagnóstico es una decisión que ya tomaste. Da el primer paso hoy.</p>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <div class="footer-col-title">Clínica</div>
+          <div class="footer-col-links">
+            <a href="#brackets">Brackets</a>
+            <a href="#testimonios">Reseñas</a>
+            <a href="#contacto">Contacto</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Acceso</div>
+          <div class="footer-col-links">
+            <a href="#" id="open-login-footer">Portal de pacientes</a>
+            <a href="#" id="open-admin-footer" class="footer-admin-link">Admin</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Ortodoncia Montemar. Todos los derechos reservados.</div>
+  </footer>
 
   <!-- WHATSAPP FLOATING BUTTON -->
   <a href="#" target="_blank" id="wa-float-link" class="wa-button">

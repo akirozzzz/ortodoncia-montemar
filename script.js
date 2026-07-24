@@ -1,9 +1,9 @@
-// Ortodoncia Montemar — lógica del sitio (recreación funcional del handoff de diseño)
+// Ortodoncia Montemar — lógica del sitio (rediseño premium, misma funcionalidad de fondo)
 (function () {
   'use strict';
 
-  const WHATSAPP_NUMBER = '56920403095';
-  const WHATSAPP_TEXT = encodeURIComponent('Hola, quiero reservar una hora en Centro Dental Dr. García');
+  const WHATSAPP_NUMBER = '56920403095'; // Kapso Sandbox (numero de prueba). Para produccion, cambiar por el numero real de WhatsApp Business verificado en Meta.
+  const WHATSAPP_TEXT = encodeURIComponent('Hola, quiero reservar una hora en Ortodoncia Montemar');
   const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_TEXT}`;
 
   function formatCLP(n) {
@@ -11,9 +11,6 @@
   }
 
   const state = {
-    scrollY: 0,
-    heroOpened: false,
-    videoPlaying: false,
     loginOpen: false,
     bookingOpen: false,
     bookingStep: 'plan', // plan | payment | success
@@ -61,120 +58,39 @@
   // ---------- DOM refs ----------
   const $ = (id) => document.getElementById(id);
   const nav = $('nav');
-  const hero = $('hero');
-  const pinLayer1 = $('pin-layer-1');
-  const pinLayer2 = $('pin-layer-2');
-  const pinCloud = $('pin-cloud');
-  const heroCtaPlanes = $('hero-cta-planes');
-  const authorityStats = $('authority-stats');
 
-  $('hero-wa-link').href = WHATSAPP_LINK;
-  $('wa-float-link').href = WHATSAPP_LINK;
+  const heroWaTargets = [$('wa-float-link'), $('contacto-wa-link')].filter(Boolean);
+  heroWaTargets.forEach(el => { el.href = WHATSAPP_LINK; });
 
-  // ---------- NAV scroll + hero replay ----------
-  let prevScrolled = false;
-  let replaying = false;
-
-  function openHero() {
-    hero.classList.add('opened');
-  }
-  function closeHero() {
-    hero.classList.remove('opened');
-  }
-
+  // ---------- NAV on scroll ----------
   function onScroll() {
-    const y = window.scrollY;
-    state.scrollY = y;
-    nav.classList.toggle('scrolled', y > 40);
-
-    const ctaRect = heroCtaPlanes.getBoundingClientRect();
-    const p1 = Math.max(0, Math.min(1, -ctaRect.top / ctaRect.height));
-    pinLayer1.style.opacity = p1;
-
-    const statsRect = authorityStats.getBoundingClientRect();
-    const p2 = Math.max(0, Math.min(1, -statsRect.top / statsRect.height));
-    pinLayer2.style.opacity = p2;
-
-    const cloudTriangle = (p) => Math.max(0, 1 - Math.abs(p - 0.5) * 2);
-    pinCloud.style.opacity = Math.max(cloudTriangle(p1), cloudTriangle(p2)) * 0.55;
-
-    if (y < 10 && prevScrolled && !replaying) {
-      replaying = true;
-      closeHero();
-      setTimeout(() => { openHero(); replaying = false; }, 350);
-    }
-    prevScrolled = y > 250;
+    nav.classList.toggle('scrolled', window.scrollY > 40);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
-  setTimeout(openHero, 500);
+  onScroll();
 
-  // ---------- Teeth model: real-time chroma-key (remove black background) ----------
-  (function () {
-    const modelVideo = $('hero-model-source');
-    const modelCanvas = $('hero-model-canvas');
-    const modelWrap = document.querySelector('.hero-model-cutout-wrap');
-    if (!modelVideo || !modelCanvas) return;
-    const mctx = modelCanvas.getContext('2d', { willReadFrequently: true });
-    let sized = false;
-    const CROP_RATIO = 0.745; // corta justo donde termina la mandíbula, antes del reflejo
-    const FADE_BAND = 0.05; // últimos % del alto visible que se desvanece suavemente
-
-    function sizeCanvas() {
-      if (!modelVideo.videoWidth) return;
-      const cropHeight = Math.round(modelVideo.videoHeight * CROP_RATIO);
-      modelCanvas.width = modelVideo.videoWidth;
-      modelCanvas.height = cropHeight;
-      if (modelWrap) modelWrap.style.aspectRatio = `${modelVideo.videoWidth} / ${cropHeight}`;
-      sized = true;
-    }
-    modelVideo.addEventListener('loadedmetadata', sizeCanvas);
-
-    function drawFrame() {
-      if (!sized) sizeCanvas();
-      if (sized && modelVideo.readyState >= 2) {
-        const w = modelCanvas.width, h = modelCanvas.height;
-        mctx.drawImage(modelVideo, 0, 0, w, h, 0, 0, w, h);
-        const frame = mctx.getImageData(0, 0, w, h);
-        const d = frame.data;
-        const fadeStartRow = h * (1 - FADE_BAND);
-        for (let y = 0; y < h; y++) {
-          const rowFade = y > fadeStartRow ? Math.max(0, 1 - (y - fadeStartRow) / (h - fadeStartRow)) : 1;
-          const rowStart = y * w * 4;
-          for (let x = 0; x < w; x++) {
-            const i = rowStart + x * 4;
-            const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
-            let a = 255;
-            if (lum < 24) a = 0;
-            else if (lum < 60) a = Math.round(((lum - 24) / (60 - 24)) * 255);
-            d[i + 3] = Math.round(a * rowFade);
-          }
+  // ---------- Reveal on scroll (fade + pequeño movimiento, sin exagerar) ----------
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
         }
-        mctx.putImageData(frame, 0, 0);
-      }
-      requestAnimationFrame(drawFrame);
-    }
-    requestAnimationFrame(drawFrame);
-  })();
-
-  // ---------- Magic shelf (planes especiales) ----------
-  (function () {
-    const shelf = $('magic-shelf');
-    const backdrop = $('magic-shelf-backdrop');
-    const openBtn = $('open-magic-shelf');
-    const closeBtn = $('close-magic-shelf');
-    if (!shelf || !backdrop || !openBtn || !closeBtn) return;
-    function openShelf() { shelf.classList.add('open'); backdrop.classList.add('open'); }
-    function closeShelf() { shelf.classList.remove('open'); backdrop.classList.remove('open'); }
-    openBtn.addEventListener('click', openShelf);
-    closeBtn.addEventListener('click', closeShelf);
-    backdrop.addEventListener('click', closeShelf);
-  })();
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -6% 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
 
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
   function openLogin() { loginModal.classList.add('open'); }
   function closeLoginFn() { loginModal.classList.remove('open'); }
   $('open-login-nav').addEventListener('click', openLogin);
+  $('open-login-footer').addEventListener('click', (e) => { e.preventDefault(); openLogin(); });
   $('close-login').addEventListener('click', closeLoginFn);
   $('submit-login').addEventListener('click', () => {
     closeLoginFn();
@@ -201,10 +117,11 @@
     $('booking-date').value = '';
     $('booking-time').value = '';
     const plan = selectedPlan();
-    $('booking-plan-name').textContent = plan ? plan.name : '';
+    $('booking-plan-name').textContent = plan ? plan.name : 'Evaluación general';
     setBookingStep('plan');
     bookingModal.classList.add('open');
   }
+  window.openBooking = openBooking; // usado por los CTA del chat
 
   function closeBookingFn() {
     bookingModal.classList.remove('open');
@@ -219,8 +136,8 @@
 
   $('go-payment').addEventListener('click', () => {
     const plan = selectedPlan();
-    $('payment-plan-name').textContent = plan ? plan.name : '';
-    $('payment-plan-price').textContent = plan ? plan.finalPriceLabel : '';
+    $('payment-plan-name').textContent = plan ? plan.name : 'Evaluación general';
+    $('payment-plan-price').textContent = plan ? plan.finalPriceLabel : 'A confirmar en consulta';
     $('submit-payment-price').textContent = plan ? plan.finalPriceLabel : '';
     setBookingStep('payment');
   });
@@ -235,7 +152,7 @@
     state.appointments.push({
       id: state.nextApptId,
       name: state.clientName,
-      service: plan ? plan.name : '',
+      service: plan ? plan.name : 'Evaluación general',
       date: state.selectedDate,
       time: state.selectedTime,
       status: 'pending'
@@ -251,27 +168,9 @@
     renderStats();
   });
 
-  // ---------- Plans ----------
-  const plansGrid = $('plans-grid');
-  function renderPlans() {
-    const services = servicesComputed();
-    plansGrid.innerHTML = services.map(sv => `
-      <div class="plan-card">
-        ${sv.effectiveDiscount ? `<div class="plan-discount-badge">-${sv.effectiveDiscount}%</div>` : ''}
-        <div class="plan-name">${sv.name}</div>
-        <p class="plan-desc">${sv.desc}</p>
-        <div class="plan-price-row">
-          <div class="plan-price-final">${sv.finalPriceLabel}</div>
-          ${sv.effectiveDiscount ? `<div class="plan-price-old">${sv.priceLabel}</div>` : ''}
-        </div>
-        <button class="plan-reserve-btn" data-plan-id="${sv.id}">Reservar y pagar</button>
-      </div>
-    `).join('');
-
-    plansGrid.querySelectorAll('.plan-reserve-btn').forEach(btn => {
-      btn.addEventListener('click', () => openBooking(btn.dataset.planId));
-    });
-  }
+  // hero + brackets CTAs
+  $('hero-cta-agendar').addEventListener('click', () => openBooking('brackets'));
+  $('brackets-cotizar-btn').addEventListener('click', () => openBooking('brackets'));
 
   // ---------- Reviews ----------
   const reviewsList = $('reviews-list');
@@ -334,7 +233,7 @@
         renderClientUpcoming();
       });
     } else {
-      wrap.innerHTML = `<div class="no-upcoming">No tienes horas próximas. <a href="#planes" id="no-upcoming-link">Reserva un plan</a>.</div>`;
+      wrap.innerHTML = `<div class="no-upcoming">No tienes horas próximas. <a href="#brackets" id="no-upcoming-link">Cotiza un tratamiento</a>.</div>`;
       $('no-upcoming-link').addEventListener('click', closeClientFn);
     }
   }
@@ -370,6 +269,7 @@
     renderStats();
   }
   function closeAdminFn() { adminOverlay.classList.remove('open'); }
+  $('open-admin-footer').addEventListener('click', (e) => { e.preventDefault(); openAdmin(); });
   $('close-admin').addEventListener('click', closeAdminFn);
 
   const tabButtons = document.querySelectorAll('.admin-tab-btn');
@@ -450,7 +350,6 @@
         if (input.dataset.field === 'discount') sv.discount = Number(input.value) || 0;
         if (input.dataset.field === 'discountOn') sv.discountOn = input.checked;
         renderServicesAdmin();
-        renderPlans();
         renderStats();
       });
     });
@@ -472,8 +371,88 @@
     $('stat-revenue').textContent = formatCLP(revenue);
   }
 
+  // ============================================================
+  // CHAT DEL HERO — interfaz lista para conectar a una IA real.
+  // Por ahora usa respuestas enlatadas (sin backend) para dejar
+  // toda la experiencia armada: burbujas, sugerencias, "escribiendo...".
+  // ============================================================
+  const chatLog = $('chat-log');
+  const chatInput = $('chat-input');
+  const chatSend = $('chat-send');
+  const chatSuggestions = $('chat-suggestions');
+  const chatPrompt = $('chat-prompt');
+
+  function addBubble(text, who, ctaLabel, ctaFn) {
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${who}`;
+    bubble.textContent = text;
+    if (ctaLabel && ctaFn) {
+      const cta = document.createElement('div');
+      cta.className = 'chat-bubble-cta';
+      cta.textContent = ctaLabel;
+      cta.addEventListener('click', ctaFn);
+      bubble.appendChild(document.createElement('br'));
+      bubble.appendChild(cta);
+    }
+    chatLog.appendChild(bubble);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return bubble;
+  }
+
+  function showTyping() {
+    const typing = document.createElement('div');
+    typing.className = 'chat-typing';
+    typing.id = 'chat-typing-indicator';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    chatLog.appendChild(typing);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return typing;
+  }
+
+  // Respuestas de demostración — reemplazar por la IA real cuando esté conectada.
+  function canned(question) {
+    const q = question.toLowerCase();
+    if (q.includes('cotizar') && q.includes('brackets') || q.includes('brackets estéticos')) {
+      return { text: 'Los Brackets Estéticos parten en $890.000, tratamiento integral con control mensual incluido. ¿Quieres que agendemos tu evaluación para confirmar el valor exacto de tu caso?', cta: 'Cotizar brackets', action: () => openBooking('brackets') };
+    }
+    if (q.includes('demora') || q.includes('cuanto tiempo') || q.includes('duración')) {
+      return { text: 'Depende del caso: en promedio va de 8 a 24 meses. Con un diagnóstico digital te damos un plazo estimado desde la primera consulta.', cta: 'Agendar evaluación', action: () => openBooking('brackets') };
+    }
+    if (q.includes('agendar') || q.includes('evaluación') || q.includes('evaluacion')) {
+      return { text: 'Perfecto, puedo abrirte el calendario para elegir fecha y hora ahora mismo.', cta: 'Elegir hora', action: () => openBooking('brackets') };
+    }
+    if (q.includes('niño') || q.includes('niña') || q.includes('infantil')) {
+      return { text: 'Sí — la Ortodoncia Infantil está pensada para diagnóstico temprano y guía del desarrollo facial, desde $180.000.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
+    }
+    if (q.includes('tipo de brackets') || q.includes('qué brackets') || q.includes('que brackets')) {
+      return { text: 'Trabajamos con Brackets Estéticos (discretos, control mensual) e Invisalign Expert (alineadores transparentes). Ambos con planificación digital desde el diagnóstico.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
+    }
+    return { text: 'Buena pregunta — nuestro equipo puede responderte en detalle por WhatsApp ahora mismo.', cta: 'Escribir por WhatsApp', action: () => window.open(WHATSAPP_LINK, '_blank') };
+  }
+
+  function sendQuestion(question) {
+    if (!question || !question.trim()) return;
+    chatSuggestions.style.display = 'none';
+    chatPrompt.style.display = 'none';
+    addBubble(question.trim(), 'user');
+    chatInput.value = '';
+    const typing = showTyping();
+    setTimeout(() => {
+      typing.remove();
+      const r = canned(question);
+      addBubble(r.text, 'bot', r.cta, r.action);
+    }, 650 + Math.random() * 400);
+  }
+
+  chatSuggestions.querySelectorAll('.chat-chip').forEach(chip => {
+    chip.addEventListener('click', () => sendQuestion(chip.dataset.q));
+  });
+  chatSend.addEventListener('click', () => sendQuestion(chatInput.value));
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendQuestion(chatInput.value);
+  });
+
   // ---------- init ----------
-  renderPlans();
   renderReviews();
   renderStats();
 })();
