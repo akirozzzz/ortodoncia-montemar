@@ -17,7 +17,8 @@
     selectedPlanId: null,
     selectedDate: '',
     selectedTime: '',
-    cardName: '', cardNumber: '', cardExp: '', cardCvc: '',
+    patientName: '',
+    patientEmail: '',
     clientOpen: false,
     clientName: 'María Fernanda',
     clientUpcoming: { service: 'Invisalign Expert', date: '2026-07-28', time: '11:00', status: 'confirmed' },
@@ -116,6 +117,8 @@
     state.selectedTime = '';
     $('booking-date').value = '';
     $('booking-time').value = '';
+    $('patient-name').value = '';
+    $('patient-email').value = '';
     const plan = selectedPlan();
     $('booking-plan-name').textContent = plan ? plan.name : 'Evaluación general';
     setBookingStep('plan');
@@ -135,38 +138,110 @@
   $('booking-time').addEventListener('change', (e) => { state.selectedTime = e.target.value; });
 
   $('go-payment').addEventListener('click', () => {
+    if (!state.selectedDate || !state.selectedTime) return;
     const plan = selectedPlan();
-    $('payment-plan-name').textContent = plan ? plan.name : 'Evaluación general';
-    $('payment-plan-price').textContent = plan ? plan.finalPriceLabel : 'A confirmar en consulta';
-    $('submit-payment-price').textContent = plan ? plan.finalPriceLabel : '';
+    if (!plan) {
+      alert('Elegí un tratamiento en la sección Brackets antes de agendar.');
+      return;
+    }
+    $('payment-plan-name').textContent = plan.name;
+    $('payment-plan-price').textContent = plan.finalPriceLabel;
+    $('submit-payment-price').textContent = plan.finalPriceLabel;
     setBookingStep('payment');
   });
 
-  $('card-name').addEventListener('input', (e) => { state.cardName = e.target.value; });
-  $('card-number').addEventListener('input', (e) => { state.cardNumber = e.target.value; });
-  $('card-exp').addEventListener('input', (e) => { state.cardExp = e.target.value; });
-  $('card-cvc').addEventListener('input', (e) => { state.cardCvc = e.target.value; });
+  $('patient-name').addEventListener('input', (e) => { state.patientName = e.target.value; });
+  $('patient-email').addEventListener('input', (e) => { state.patientEmail = e.target.value; });
 
-  $('submit-payment').addEventListener('click', () => {
+  // ---------- Pago real con Fintoc ----------
+  // Creamos la reserva + una Checkout Session en el servidor
+  // (api/payments/create-checkout-session.js) y redirigimos el navegador a
+  // la pasarela hospedada de Fintoc. El resultado final lo confirma el
+  // webhook de Fintoc; por eso al volver del pago consultamos
+  // /api/bookings/status en checkPaymentReturn().
+  $('submit-payment').addEventListener('click', async () => {
     const plan = selectedPlan();
-    state.appointments.push({
-      id: state.nextApptId,
-      name: state.clientName,
-      service: plan ? plan.name : 'Evaluación general',
-      date: state.selectedDate,
-      time: state.selectedTime,
-      status: 'pending'
-    });
-    state.nextApptId += 1;
-    state.cardName = state.cardNumber = state.cardExp = state.cardCvc = '';
-    $('card-name').value = '';
-    $('card-number').value = '';
-    $('card-exp').value = '';
-    $('card-cvc').value = '';
-    setBookingStep('success');
-    renderAppointmentsAdmin();
-    renderStats();
+    if (!plan) return;
+    const name = (state.patientName || '').trim();
+    if (!name) {
+      $('patient-name').focus();
+      return;
+    }
+
+    const btn = $('submit-payment');
+    const label = $('submit-payment-label');
+    btn.disabled = true;
+    label.textContent = 'Redirigiendo a Fintoc...';
+
+    try {
+      const res = await fetch('/api/payments/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          serviceId: plan.id,
+          patientName: name,
+          patientEmail: (state.patientEmail || '').trim() || undefined,
+          date: state.selectedDate,
+          time: state.selectedTime
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.checkoutUrl) throw new Error(data.error || 'Error al iniciar el pago');
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      alert('No se pudo iniciar el pago. Intenta nuevamente o escríbenos por WhatsApp.');
+      btn.disabled = false;
+      label.textContent = 'Pagar con Fintoc';
+    }
   });
+
+  // ---------- Regreso desde la pasarela de Fintoc ----------
+  async function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get('booking');
+    const pago = params.get('pago');
+    if (!bookingId || !pago) return;
+
+    window.history.replaceState({}, '', window.location.pathname);
+    bookingModal.classList.add('open');
+    setBookingStep('success');
+
+    const titleEl = $('success-title');
+    const textEl = $('success-text');
+
+    if (pago === 'cancelado') {
+      titleEl.textContent = 'Pago no completado';
+      textEl.textContent = 'No alcanzaste a terminar el pago. Podés intentarlo de nuevo cuando quieras desde Brackets.';
+      return;
+    }
+
+    titleEl.textContent = 'Confirmando tu pago...';
+    textEl.textContent = 'Danos un momento mientras confirmamos el pago con Fintoc.';
+
+    for (let i = 0; i < 8; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        const res = await fetch(`/api/bookings/status?id=${encodeURIComponent(bookingId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'paid') {
+            titleEl.textContent = 'Reserva confirmada';
+            textEl.textContent = 'Te enviamos el detalle a tu correo. Tu hora quedará confirmada por el equipo dentro de 24 horas.';
+            return;
+          }
+          if (data.status === 'failed') {
+            titleEl.textContent = 'El pago no se pudo procesar';
+            textEl.textContent = 'Intenta nuevamente o escríbenos por WhatsApp para ayudarte.';
+            return;
+          }
+        }
+      } catch (err) {
+        // seguimos intentando
+      }
+    }
+    titleEl.textContent = 'Estamos confirmando tu pago';
+    textEl.textContent = 'Puede tardar unos minutos. Te avisaremos por correo apenas quede confirmado.';
+  }
 
   // hero + brackets CTAs
   $('hero-cta-agendar').addEventListener('click', () => openBooking('brackets'));
@@ -474,4 +549,5 @@
   // ---------- init ----------
   renderReviews();
   renderStats();
+  checkPaymentReturn();
 })();

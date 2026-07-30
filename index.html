@@ -333,18 +333,15 @@
       <div class="booking-step" id="step-payment">
         <div class="ssl-row">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="oklch(50% 0.13 235)" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="oklch(50% 0.13 235)" stroke-width="1.6"/></svg>
-          <span>Pago cifrado SSL de 256 bits</span>
+          <span>Pago seguro con Fintoc</span>
         </div>
         <div class="booking-plan-title" id="payment-plan-name" style="margin-bottom:4px;"></div>
         <div class="booking-price" id="payment-plan-price"></div>
         <div class="modal-form">
-          <input class="field-input" placeholder="Nombre en la tarjeta" id="card-name"/>
-          <input class="field-input" placeholder="Número de tarjeta" id="card-number"/>
-          <div class="booking-two-col">
-            <input class="field-input" placeholder="MM/AA" id="card-exp"/>
-            <input class="field-input" placeholder="CVC" id="card-cvc"/>
-          </div>
-          <button class="modal-submit-btn" id="submit-payment">Confirmar y pagar <span id="submit-payment-price"></span></button>
+          <input class="field-input" placeholder="Nombre completo" id="patient-name"/>
+          <input class="field-input" placeholder="Correo electrónico" id="patient-email" type="email"/>
+          <button class="modal-submit-btn" id="submit-payment"><span id="submit-payment-label">Pagar con Fintoc</span> <span id="submit-payment-price"></span></button>
+          <p class="modal-sub" style="margin:10px 0 0;font-size:12px;">Te llevamos a la pasarela segura de Fintoc para completar el pago.</p>
         </div>
       </div>
 
@@ -353,8 +350,8 @@
           <div class="success-check">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="success-title">Reserva confirmada</div>
-          <p class="success-text">Te enviamos el detalle a tu correo. Tu hora quedará confirmada por el equipo dentro de 24 horas.</p>
+          <div class="success-title" id="success-title">Reserva confirmada</div>
+          <p class="success-text" id="success-text">Te enviamos el detalle a tu correo. Tu hora quedará confirmada por el equipo dentro de 24 horas.</p>
           <button class="success-done-btn" id="close-booking-success">Listo</button>
         </div>
       </div>
