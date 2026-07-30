@@ -5,8 +5,9 @@ const { getBooking, updateBookingStatus, wasProcessed, markProcessed } = require
 const { getService } = require('../../lib/services-catalog');
 
 /**
- * Webhook de Fintoc: confirma cuando se pagó (o falló) una reserva hecha
- * por WhatsApp. Queda expuesto en:
+ * Webhook de Fintoc: confirma cuando se pagó (o falló) una reserva, ya sea
+ * hecha por WhatsApp (lib/bot-flow.js) o desde el modal de la web
+ * (api/payments/create-checkout-session.js). Queda expuesto en:
  *   https://TU-DOMINIO/api/payments/fintoc-webhook
  *
  * Configurar en el dashboard de Fintoc (Webhooks > Create your Webhook
@@ -15,8 +16,12 @@ const { getService } = require('../../lib/services-catalog');
  *   Evento: checkout_session.finished
  *
  * Usamos `checkout_session.finished` porque trae de vuelta el
- * `metadata.bookingId` que le pasamos al crear la Checkout Session en
- * lib/bot-flow.js.
+ * `metadata.bookingId` que le pasamos al crear la Checkout Session.
+ *
+ * Las reservas hechas desde la web no tienen teléfono (booking.phone es
+ * null), así que solo mandamos el mensaje de confirmación por WhatsApp
+ * cuando sí hay teléfono. Para reservas web, el frontend confirma el
+ * estado consultando /api/bookings/status.
  */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -63,8 +68,9 @@ async function handleCheckoutFinished(session) {
 
   if (intent.status === 'succeeded') {
     const booking = await updateBookingStatus(bookingId, 'paid');
-    if (booking) await notifyConfirmed(booking);
+    if (booking && booking.phone) await notifyConfirmed(booking);
   } else if (intent.status === 'failed') {
+    await updateBookingStatus(bookingId, 'failed');
     await notifyFailed(bookingId);
   }
   // Si el status es "requires_action" (transferencia empresarial pendiente
@@ -84,7 +90,7 @@ async function notifyConfirmed(booking) {
 
 async function notifyFailed(bookingId) {
   const booking = await getBooking(bookingId);
-  if (!booking) return;
+  if (!booking || !booking.phone) return;
   await getKapsoClient().messages.sendText({
     phoneNumberId: KAPSO_PHONE_NUMBER_ID,
     to: booking.phone,
