@@ -1,4 +1,4 @@
-# Handoff: Ortodoncia Montemar — Sitio web
+# Handoff: Ortodoncia Montemar — Sitio web 
 
 ## Overview
 Sitio web para una clínica de ortodoncia (Ortodoncia Montemar): landing pública con reserva de horas, pago online, portal de pacientes (reseñas, reprogramar/cancelar) y panel de administración (gestión de reservas, precios/descuentos, estadísticas).
