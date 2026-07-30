@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  const WHATSAPP_NUMBER = '56920403095';
-  const WHATSAPP_TEXT = encodeURIComponent('Hola, quiero reservar una hora en Centro Dental Dr. García');
+  const WHATSAPP_NUMBER = '56920403095'; // Kapso Sandbox (numero de prueba). Para produccion, cambiar por el numero real de WhatsApp Business verificado en Meta.
+  const WHATSAPP_TEXT = encodeURIComponent('Hola, quiero reservar una hora en Ortodoncia Montemar');
   const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_TEXT}`;
 
   function formatCLP(n) {
@@ -20,7 +20,8 @@
     selectedPlanId: null,
     selectedDate: '',
     selectedTime: '',
-    cardName: '', cardNumber: '', cardExp: '', cardCvc: '',
+    patientName: '',
+    patientEmail: '',
     clientOpen: false,
     clientName: 'María Fernanda',
     clientUpcoming: { service: 'Invisalign Expert', date: '2026-07-28', time: '11:00', status: 'confirmed' },
@@ -62,11 +63,7 @@
   const $ = (id) => document.getElementById(id);
   const nav = $('nav');
   const hero = $('hero');
-  const pinLayer1 = $('pin-layer-1');
-  const pinLayer2 = $('pin-layer-2');
-  const pinCloud = $('pin-cloud');
-  const heroCtaPlanes = $('hero-cta-planes');
-  const authorityStats = $('authority-stats');
+  const heroBgNext = $('hero-bg-next');
 
   $('hero-wa-link').href = WHATSAPP_LINK;
   $('wa-float-link').href = WHATSAPP_LINK;
@@ -87,16 +84,10 @@
     state.scrollY = y;
     nav.classList.toggle('scrolled', y > 40);
 
-    const ctaRect = heroCtaPlanes.getBoundingClientRect();
-    const p1 = Math.max(0, Math.min(1, -ctaRect.top / ctaRect.height));
-    pinLayer1.style.opacity = p1;
-
-    const statsRect = authorityStats.getBoundingClientRect();
-    const p2 = Math.max(0, Math.min(1, -statsRect.top / statsRect.height));
-    pinLayer2.style.opacity = p2;
-
-    const cloudTriangle = (p) => Math.max(0, 1 - Math.abs(p - 0.5) * 2);
-    pinCloud.style.opacity = Math.max(cloudTriangle(p1), cloudTriangle(p2)) * 0.55;
+    const heroFadeStart = window.innerHeight * 0.55;
+    const heroFadeEnd = window.innerHeight * 0.95;
+    const heroFadeProgress = Math.max(0, Math.min(1, (y - heroFadeStart) / (heroFadeEnd - heroFadeStart)));
+    heroBgNext.style.opacity = heroFadeProgress;
 
     if (y < 10 && prevScrolled && !replaying) {
       replaying = true;
@@ -108,73 +99,12 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   setTimeout(openHero, 500);
 
-  // ---------- Teeth model: real-time chroma-key (remove black background) ----------
-  (function () {
-    const modelVideo = $('hero-model-source');
-    const modelCanvas = $('hero-model-canvas');
-    const modelWrap = document.querySelector('.hero-model-cutout-wrap');
-    if (!modelVideo || !modelCanvas) return;
-    const mctx = modelCanvas.getContext('2d', { willReadFrequently: true });
-    let sized = false;
-    const CROP_RATIO = 0.745; // corta justo donde termina la mandíbula, antes del reflejo
-    const FADE_BAND = 0.05; // últimos % del alto visible que se desvanece suavemente
-
-    function sizeCanvas() {
-      if (!modelVideo.videoWidth) return;
-      const cropHeight = Math.round(modelVideo.videoHeight * CROP_RATIO);
-      modelCanvas.width = modelVideo.videoWidth;
-      modelCanvas.height = cropHeight;
-      if (modelWrap) modelWrap.style.aspectRatio = `${modelVideo.videoWidth} / ${cropHeight}`;
-      sized = true;
-    }
-    modelVideo.addEventListener('loadedmetadata', sizeCanvas);
-
-    function drawFrame() {
-      if (!sized) sizeCanvas();
-      if (sized && modelVideo.readyState >= 2) {
-        const w = modelCanvas.width, h = modelCanvas.height;
-        mctx.drawImage(modelVideo, 0, 0, w, h, 0, 0, w, h);
-        const frame = mctx.getImageData(0, 0, w, h);
-        const d = frame.data;
-        const fadeStartRow = h * (1 - FADE_BAND);
-        for (let y = 0; y < h; y++) {
-          const rowFade = y > fadeStartRow ? Math.max(0, 1 - (y - fadeStartRow) / (h - fadeStartRow)) : 1;
-          const rowStart = y * w * 4;
-          for (let x = 0; x < w; x++) {
-            const i = rowStart + x * 4;
-            const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
-            let a = 255;
-            if (lum < 24) a = 0;
-            else if (lum < 60) a = Math.round(((lum - 24) / (60 - 24)) * 255);
-            d[i + 3] = Math.round(a * rowFade);
-          }
-        }
-        mctx.putImageData(frame, 0, 0);
-      }
-      requestAnimationFrame(drawFrame);
-    }
-    requestAnimationFrame(drawFrame);
-  })();
-
-  // ---------- Magic shelf (planes especiales) ----------
-  (function () {
-    const shelf = $('magic-shelf');
-    const backdrop = $('magic-shelf-backdrop');
-    const openBtn = $('open-magic-shelf');
-    const closeBtn = $('close-magic-shelf');
-    if (!shelf || !backdrop || !openBtn || !closeBtn) return;
-    function openShelf() { shelf.classList.add('open'); backdrop.classList.add('open'); }
-    function closeShelf() { shelf.classList.remove('open'); backdrop.classList.remove('open'); }
-    openBtn.addEventListener('click', openShelf);
-    closeBtn.addEventListener('click', closeShelf);
-    backdrop.addEventListener('click', closeShelf);
-  })();
-
   // ---------- Login modal ----------
   const loginModal = $('login-modal');
   function openLogin() { loginModal.classList.add('open'); }
   function closeLoginFn() { loginModal.classList.remove('open'); }
   $('open-login-nav').addEventListener('click', openLogin);
+  $('open-login-footer').addEventListener('click', (e) => { e.preventDefault(); openLogin(); });
   $('close-login').addEventListener('click', closeLoginFn);
   $('submit-login').addEventListener('click', () => {
     closeLoginFn();
@@ -200,11 +130,14 @@
     state.selectedTime = '';
     $('booking-date').value = '';
     $('booking-time').value = '';
+    $('patient-name').value = '';
+    $('patient-email').value = '';
     const plan = selectedPlan();
     $('booking-plan-name').textContent = plan ? plan.name : '';
     setBookingStep('plan');
     bookingModal.classList.add('open');
   }
+  window.openBooking = openBooking;
 
   function closeBookingFn() {
     bookingModal.classList.remove('open');
@@ -218,6 +151,7 @@
   $('booking-time').addEventListener('change', (e) => { state.selectedTime = e.target.value; });
 
   $('go-payment').addEventListener('click', () => {
+    if (!state.selectedDate || !state.selectedTime) return;
     const plan = selectedPlan();
     $('payment-plan-name').textContent = plan ? plan.name : '';
     $('payment-plan-price').textContent = plan ? plan.finalPriceLabel : '';
@@ -225,31 +159,98 @@
     setBookingStep('payment');
   });
 
-  $('card-name').addEventListener('input', (e) => { state.cardName = e.target.value; });
-  $('card-number').addEventListener('input', (e) => { state.cardNumber = e.target.value; });
-  $('card-exp').addEventListener('input', (e) => { state.cardExp = e.target.value; });
-  $('card-cvc').addEventListener('input', (e) => { state.cardCvc = e.target.value; });
+  $('patient-name').addEventListener('input', (e) => { state.patientName = e.target.value; });
+  $('patient-email').addEventListener('input', (e) => { state.patientEmail = e.target.value; });
 
-  $('submit-payment').addEventListener('click', () => {
+  // ---------- Pago real con Fintoc ----------
+  // Al confirmar, creamos la reserva + una Checkout Session en el servidor
+  // (api/payments/create-checkout-session.js) y redirigimos el navegador a
+  // la pasarela hospedada de Fintoc. El resultado final del pago lo
+  // confirma el webhook de Fintoc; por eso al volver del pago consultamos
+  // /api/bookings/status en checkPaymentReturn().
+  $('submit-payment').addEventListener('click', async () => {
     const plan = selectedPlan();
-    state.appointments.push({
-      id: state.nextApptId,
-      name: state.clientName,
-      service: plan ? plan.name : '',
-      date: state.selectedDate,
-      time: state.selectedTime,
-      status: 'pending'
-    });
-    state.nextApptId += 1;
-    state.cardName = state.cardNumber = state.cardExp = state.cardCvc = '';
-    $('card-name').value = '';
-    $('card-number').value = '';
-    $('card-exp').value = '';
-    $('card-cvc').value = '';
-    setBookingStep('success');
-    renderAppointmentsAdmin();
-    renderStats();
+    if (!plan) return;
+    const name = (state.patientName || '').trim();
+    if (!name) {
+      $('patient-name').focus();
+      return;
+    }
+
+    const btn = $('submit-payment');
+    const label = $('submit-payment-label');
+    btn.disabled = true;
+    label.textContent = 'Redirigiendo a Fintoc...';
+
+    try {
+      const res = await fetch('/api/payments/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          serviceId: plan.id,
+          patientName: name,
+          patientEmail: (state.patientEmail || '').trim() || undefined,
+          date: state.selectedDate,
+          time: state.selectedTime
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.checkoutUrl) throw new Error(data.error || 'Error al iniciar el pago');
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      alert('No se pudo iniciar el pago. Intenta nuevamente o escríbenos por WhatsApp.');
+      btn.disabled = false;
+      label.textContent = 'Pagar con Fintoc';
+    }
   });
+
+  // ---------- Regreso desde la pasarela de Fintoc ----------
+  async function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get('booking');
+    const pago = params.get('pago');
+    if (!bookingId || !pago) return;
+
+    window.history.replaceState({}, '', window.location.pathname);
+    bookingModal.classList.add('open');
+    setBookingStep('success');
+
+    const titleEl = $('success-title');
+    const textEl = $('success-text');
+
+    if (pago === 'cancelado') {
+      titleEl.textContent = 'Pago no completado';
+      textEl.textContent = 'No alcanzaste a terminar el pago. Podés intentarlo de nuevo cuando quieras desde "Ver planes y tarifas".';
+      return;
+    }
+
+    titleEl.textContent = 'Confirmando tu pago...';
+    textEl.textContent = 'Danos un momento mientras confirmamos el pago con Fintoc.';
+
+    for (let i = 0; i < 8; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        const res = await fetch(`/api/bookings/status?id=${encodeURIComponent(bookingId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'paid') {
+            titleEl.textContent = 'Reserva confirmada';
+            textEl.textContent = 'Te enviamos el detalle a tu correo. Tu hora quedará confirmada por el equipo dentro de 24 horas.';
+            return;
+          }
+          if (data.status === 'failed') {
+            titleEl.textContent = 'El pago no se pudo procesar';
+            textEl.textContent = 'Intenta nuevamente o escríbenos por WhatsApp para ayudarte.';
+            return;
+          }
+        }
+      } catch (err) {
+        // seguimos intentando
+      }
+    }
+    titleEl.textContent = 'Estamos confirmando tu pago';
+    textEl.textContent = 'Puede tardar unos minutos. Te avisaremos por correo apenas quede confirmado.';
+  }
 
   // ---------- Plans ----------
   const plansGrid = $('plans-grid');
@@ -370,6 +371,7 @@
     renderStats();
   }
   function closeAdminFn() { adminOverlay.classList.remove('open'); }
+  $('open-admin-footer').addEventListener('click', (e) => { e.preventDefault(); openAdmin(); });
   $('close-admin').addEventListener('click', closeAdminFn);
 
   const tabButtons = document.querySelectorAll('.admin-tab-btn');
@@ -476,4 +478,5 @@
   renderPlans();
   renderReviews();
   renderStats();
+  checkPaymentReturn();
 })();
