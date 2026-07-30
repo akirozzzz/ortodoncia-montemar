@@ -21,7 +21,7 @@
     patientEmail: '',
     clientOpen: false,
     clientName: 'María Fernanda',
-    clientUpcoming: { service: 'Invisalign Expert', date: '2026-07-28', time: '11:00', status: 'confirmed' },
+    clientUpcoming: { service: 'Brackets de Zafiro', date: '2026-07-28', time: '11:00', status: 'confirmed' },
     reviews: [
       { name: 'Javiera R.', text: 'Explicaron cada paso del tratamiento con total transparencia. Hoy sonrío distinto.', rating: 5, date: 'Jun 2026' }
     ],
@@ -29,12 +29,12 @@
     newReviewRating: 5,
     services: [
       { id: 'kids', name: 'Ortodoncia Infantil', price: 180000, discount: 0, discountOn: false, desc: 'Diagnóstico temprano y guía del desarrollo facial.' },
-      { id: 'invisalign', name: 'Invisalign Expert', price: 1450000, discount: 15, discountOn: true, desc: 'Alineadores invisibles, resultados predecibles.' },
+      { id: 'zafiro', name: 'Brackets de Zafiro', price: 1450000, discount: 15, discountOn: true, desc: 'Prácticamente transparentes, muy resistentes, con seguimiento de un ortodoncista especialista.' },
       { id: 'brackets', name: 'Brackets Estéticos', price: 890000, discount: 0, discountOn: false, desc: 'Tratamiento integral con control mensual.' },
       { id: 'vip', name: 'Plan VIP Integral', price: 2100000, discount: 10, discountOn: true, desc: 'Atención prioritaria, chequeos ilimitados, acceso 24/7.' }
     ],
     appointments: [
-      { id: 1, name: 'Constanza Ibáñez', service: 'Invisalign Expert', date: '2026-07-22', time: '10:30', status: 'pending' },
+      { id: 1, name: 'Constanza Ibáñez', service: 'Brackets de Zafiro', date: '2026-07-22', time: '10:30', status: 'pending' },
       { id: 2, name: 'Tomás Vidal', service: 'Brackets Estéticos', date: '2026-07-23', time: '16:00', status: 'confirmed' },
       { id: 3, name: 'Rocío Salas', service: 'Plan VIP Integral', date: '2026-07-18', time: '09:00', status: 'cancelled' }
     ],
@@ -509,6 +509,9 @@
     if (q.includes('cotizar') && q.includes('brackets') || q.includes('brackets estéticos')) {
       return { text: 'Los Brackets Estéticos parten en $890.000, tratamiento integral con control mensual incluido. ¿Quieres que agendemos tu evaluación para confirmar el valor exacto de tu caso?', cta: 'Cotizar brackets', action: () => openBooking('brackets') };
     }
+    if (q.includes('zafiro')) {
+      return { text: 'Los Brackets de Zafiro son prácticamente transparentes y muy resistentes, con el mismo seguimiento mensual de un ortodoncista especialista. Parten en $1.450.000 con 15% de descuento.', cta: 'Cotizar brackets de zafiro', action: () => openBooking('zafiro') };
+    }
     if (q.includes('demora') || q.includes('cuanto tiempo') || q.includes('duración')) {
       return { text: 'Depende del caso: en promedio va de 8 a 24 meses. Con un diagnóstico digital te damos un plazo estimado desde la primera consulta.', cta: 'Agendar evaluación', action: () => openBooking('brackets') };
     }
@@ -519,7 +522,7 @@
       return { text: 'Sí — la Ortodoncia Infantil está pensada para diagnóstico temprano y guía del desarrollo facial, desde $180.000.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
     }
     if (q.includes('tipo de brackets') || q.includes('qué brackets') || q.includes('que brackets')) {
-      return { text: 'Trabajamos con Brackets Estéticos, Invisalign Expert y Ortodoncia Infantil. Puedes ver el detalle y precio de cada uno tocando su tarjeta en la sección Brackets.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
+      return { text: 'Trabajamos con Brackets Estéticos, Brackets de Zafiro y Ortodoncia Infantil, todos guiados por ortodoncistas especialistas certificados. Puedes ver el detalle y precio de cada uno tocando su tarjeta en la sección Brackets.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
     }
     return { text: 'Buena pregunta — nuestro equipo puede responderte en detalle por WhatsApp ahora mismo.', cta: 'Escribir por WhatsApp', action: () => window.open(WHATSAPP_LINK, '_blank') };
   }
