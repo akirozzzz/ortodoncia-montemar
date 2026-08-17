@@ -1,4 +1,4 @@
-// Ortodoncia Montemar — lógica del sitio (rediseño premium, misma funcionalidad de fondo)
+// Ortodoncia Montemar - logica del sitio (rediseno premium, misma funcionalidad de fondo)
 (function () {
   'use strict';
 
@@ -20,23 +20,24 @@
     patientName: '',
     patientEmail: '',
     clientOpen: false,
-    clientName: 'María Fernanda',
+    clientName: 'Maria Fernanda',
     clientUpcoming: { service: 'Brackets de Zafiro', date: '2026-07-28', time: '11:00', status: 'confirmed' },
     reviews: [
-      { name: 'Javiera R.', text: 'Explicaron cada paso del tratamiento con total transparencia. Hoy sonrío distinto.', rating: 5, date: 'Jun 2026' }
+      { name: 'Javiera R.', text: 'Explicaron cada paso del tratamiento con total transparencia. Hoy sonrio distinto.', rating: 5, date: 'Jun 2026' }
     ],
     newReviewText: '',
     newReviewRating: 5,
     services: [
-      { id: 'kids', name: 'Ortodoncia Infantil', price: 180000, discount: 0, discountOn: false, desc: 'Diagnóstico temprano y guía del desarrollo facial.' },
-      { id: 'zafiro', name: 'Brackets de Zafiro', price: 1450000, discount: 15, discountOn: true, desc: 'Prácticamente transparentes, muy resistentes, con seguimiento de un ortodoncista especialista.' },
-      { id: 'brackets', name: 'Brackets Estéticos', price: 890000, discount: 0, discountOn: false, desc: 'Tratamiento integral con control mensual.' },
-      { id: 'vip', name: 'Plan VIP Integral', price: 2100000, discount: 10, discountOn: true, desc: 'Atención prioritaria, chequeos ilimitados, acceso 24/7.' }
+      { id: 'evaluacion', name: 'Primera Consulta (Evaluacion)', price: 0, discount: 0, discountOn: false, desc: 'Evaluacion clinica inicial para definir tu plan de tratamiento. Sin costo.' },
+      { id: 'kids', name: 'Ortodoncia Infantil', price: 180000, discount: 0, discountOn: false, desc: 'Diagnostico temprano y guia del desarrollo facial.' },
+      { id: 'zafiro', name: 'Brackets de Zafiro', price: 1450000, discount: 15, discountOn: true, desc: 'Practicamente transparentes, muy resistentes, con seguimiento de un ortodoncista especialista.' },
+      { id: 'brackets', name: 'Brackets Esteticos', price: 890000, discount: 0, discountOn: false, desc: 'Tratamiento integral con control mensual.' },
+      { id: 'vip', name: 'Plan VIP Integral', price: 2100000, discount: 10, discountOn: true, desc: 'Atencion prioritaria, chequeos ilimitados, acceso 24/7.' }
     ],
     appointments: [
-      { id: 1, name: 'Constanza Ibáñez', service: 'Brackets de Zafiro', date: '2026-07-22', time: '10:30', status: 'pending' },
-      { id: 2, name: 'Tomás Vidal', service: 'Brackets Estéticos', date: '2026-07-23', time: '16:00', status: 'confirmed' },
-      { id: 3, name: 'Rocío Salas', service: 'Plan VIP Integral', date: '2026-07-18', time: '09:00', status: 'cancelled' }
+      { id: 1, name: 'Constanza Ibanez', service: 'Brackets de Zafiro', date: '2026-07-22', time: '10:30', status: 'pending' },
+      { id: 2, name: 'Tomas Vidal', service: 'Brackets Esteticos', date: '2026-07-23', time: '16:00', status: 'confirmed' },
+      { id: 3, name: 'Rocio Salas', service: 'Plan VIP Integral', date: '2026-07-18', time: '09:00', status: 'cancelled' }
     ],
     adminOpen: false,
     adminTab: 'reservas',
@@ -70,7 +71,7 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // ---------- Reveal on scroll (fade + pequeño movimiento, sin exagerar) ----------
+  // ---------- Reveal on scroll (fade + pequeno movimiento, sin exagerar) ----------
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
@@ -120,7 +121,10 @@
     $('patient-name').value = '';
     $('patient-email').value = '';
     const plan = selectedPlan();
-    $('booking-plan-name').textContent = plan ? plan.name : 'Evaluación general';
+    $('booking-plan-name').textContent = plan ? plan.name : 'Evaluacion general';
+    $('booking-plan-price-note').textContent = plan && plan.price === 0 ? 'Sin costo' : '';
+    $('success-title').textContent = 'Reserva confirmada';
+    $('success-text').textContent = 'Te enviamos el detalle a tu correo. Tu hora quedara confirmada por el equipo dentro de 24 horas.';
     setBookingStep('plan');
     bookingModal.classList.add('open');
   }
@@ -141,12 +145,18 @@
     if (!state.selectedDate || !state.selectedTime) return;
     const plan = selectedPlan();
     if (!plan) {
-      alert('Elegí un tratamiento en la sección Brackets antes de agendar.');
+      alert('Elegi un tratamiento en la seccion Brackets antes de agendar.');
       return;
     }
+    const isFree = plan.price === 0;
     $('payment-plan-name').textContent = plan.name;
-    $('payment-plan-price').textContent = plan.finalPriceLabel;
-    $('submit-payment-price').textContent = plan.finalPriceLabel;
+    $('payment-plan-price').textContent = isFree ? 'Sin costo' : plan.finalPriceLabel;
+    $('payment-ssl-row').style.display = isFree ? 'none' : '';
+    $('submit-payment-label').textContent = isFree ? 'Confirmar hora' : 'Pagar con Fintoc';
+    $('submit-payment-price').textContent = isFree ? '' : plan.finalPriceLabel;
+    $('payment-fintoc-note').textContent = isFree
+      ? 'Es tu primera consulta: no tiene costo. Solo confirmamos tus datos y la hora.'
+      : 'Te llevamos a la pasarela segura de Fintoc para completar el pago.';
     setBookingStep('payment');
   });
 
@@ -168,10 +178,40 @@
       return;
     }
 
+    const isFree = plan.price === 0;
     const btn = $('submit-payment');
     const label = $('submit-payment-label');
     btn.disabled = true;
-    label.textContent = 'Redirigiendo a Fintoc...';
+    label.textContent = isFree ? 'Confirmando...' : 'Redirigiendo a Fintoc...';
+
+    // Evaluacion gratuita: no pasa por Fintoc, se confirma directo.
+    if (isFree) {
+      try {
+        const res = await fetch('/api/bookings/create-free', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceId: plan.id,
+            patientName: name,
+            patientEmail: (state.patientEmail || '').trim() || undefined,
+            date: state.selectedDate,
+            time: state.selectedTime
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'No se pudo agendar la hora');
+        $('success-title').textContent = 'Evaluacion agendada';
+        $('success-text').textContent = 'Te esperamos en tu horario elegido. Es tu primera consulta y no tiene costo - ahi evaluamos tu caso y te damos el plan de tratamiento recomendado.';
+        setBookingStep('success');
+        btn.disabled = false;
+        label.textContent = 'Confirmar hora';
+      } catch (err) {
+        alert('No se pudo agendar tu hora. Intenta nuevamente o escribenos por WhatsApp.');
+        btn.disabled = false;
+        label.textContent = 'Confirmar hora';
+      }
+      return;
+    }
 
     try {
       const res = await fetch('/api/payments/create-checkout-session', {
@@ -189,7 +229,7 @@
       if (!res.ok || !data.checkoutUrl) throw new Error(data.error || 'Error al iniciar el pago');
       window.location.href = data.checkoutUrl;
     } catch (err) {
-      alert('No se pudo iniciar el pago. Intenta nuevamente o escríbenos por WhatsApp.');
+      alert('No se pudo iniciar el pago. Intenta nuevamente o escribenos por WhatsApp.');
       btn.disabled = false;
       label.textContent = 'Pagar con Fintoc';
     }
@@ -211,7 +251,7 @@
 
     if (pago === 'cancelado') {
       titleEl.textContent = 'Pago no completado';
-      textEl.textContent = 'No alcanzaste a terminar el pago. Podés intentarlo de nuevo cuando quieras desde Brackets.';
+      textEl.textContent = 'No alcanzaste a terminar el pago. Podes intentarlo de nuevo cuando quieras desde Brackets.';
       return;
     }
 
@@ -226,12 +266,12 @@
           const data = await res.json();
           if (data.status === 'paid') {
             titleEl.textContent = 'Reserva confirmada';
-            textEl.textContent = 'Te enviamos el detalle a tu correo. Tu hora quedará confirmada por el equipo dentro de 24 horas.';
+            textEl.textContent = 'Te enviamos el detalle a tu correo. Tu hora quedara confirmada por el equipo dentro de 24 horas.';
             return;
           }
           if (data.status === 'failed') {
             titleEl.textContent = 'El pago no se pudo procesar';
-            textEl.textContent = 'Intenta nuevamente o escríbenos por WhatsApp para ayudarte.';
+            textEl.textContent = 'Intenta nuevamente o escribenos por WhatsApp para ayudarte.';
             return;
           }
         }
@@ -244,7 +284,9 @@
   }
 
   // hero + brackets CTAs
-  $('hero-cta-agendar').addEventListener('click', () => openBooking('brackets'));
+  // El boton del hero lleva a la evaluacion (primera consulta), que es gratis.
+  // El de Brackets lleva a cotizar un tratamiento especifico (pago con Fintoc).
+  $('hero-cta-agendar').addEventListener('click', () => openBooking('evaluacion'));
   $('brackets-cotizar-btn').addEventListener('click', () => openBooking('brackets'));
 
   // ---------- Brackets: detalle al hacer clic en cada tarjeta ----------
@@ -269,7 +311,7 @@
   // ---------- Reviews ----------
   const reviewsList = $('reviews-list');
   function renderReviews() {
-    const stars = (r) => '★'.repeat(r) + '☆'.repeat(5 - r);
+    const stars = (r) => '*'.repeat(r) + '-'.repeat(5 - r);
     let html = state.reviews.map(r => `
       <div class="review-card">
         <div class="review-top">
@@ -282,9 +324,9 @@
     `).join('');
 
     if (state.reviews.length === 0) {
-      html += `<div class="no-reviews">Aún no hay reseñas públicas — las reales aparecerán aquí apenas los pacientes las publiquen desde su portal.</div>`;
+      html += `<div class="no-reviews">Aun no hay resenas publicas - las reales apareceran aqui apenas los pacientes las publiquen desde su portal.</div>`;
     }
-    html += `<button class="review-login-btn" id="review-open-login">Inicia sesión para dejar tu reseña</button>`;
+    html += `<button class="review-login-btn" id="review-open-login">Inicia sesion para dejar tu resena</button>`;
     reviewsList.innerHTML = html;
     $('review-open-login').addEventListener('click', openLogin);
   }
@@ -304,12 +346,12 @@
     const wrap = $('client-upcoming-wrap');
     const up = state.clientUpcoming;
     if (up) {
-      const statusLabel = up.status === 'confirmed' ? 'Confirmada' : 'Pendiente de confirmación';
+      const statusLabel = up.status === 'confirmed' ? 'Confirmada' : 'Pendiente de confirmacion';
       wrap.innerHTML = `
         <div class="upcoming-card">
           <div>
             <div class="upcoming-service">${up.service}</div>
-            <div class="upcoming-meta">${up.date} · ${up.time} hrs</div>
+            <div class="upcoming-meta">${up.date} - ${up.time} hrs</div>
             <div class="upcoming-status">${statusLabel}</div>
           </div>
           <div class="upcoming-actions">
@@ -327,14 +369,14 @@
         renderClientUpcoming();
       });
     } else {
-      wrap.innerHTML = `<div class="no-upcoming">No tienes horas próximas. <a href="#brackets" id="no-upcoming-link">Cotiza un tratamiento</a>.</div>`;
+      wrap.innerHTML = `<div class="no-upcoming">No tienes horas proximas. <a href="#brackets" id="no-upcoming-link">Cotiza un tratamiento</a>.</div>`;
       $('no-upcoming-link').addEventListener('click', closeClientFn);
     }
   }
 
   function renderStars() {
     const row = $('star-row');
-    row.innerHTML = [1, 2, 3, 4, 5].map(n => `<button class="star-btn ${n <= state.newReviewRating ? 'active' : ''}" data-star="${n}">★</button>`).join('');
+    row.innerHTML = [1, 2, 3, 4, 5].map(n => `<button class="star-btn ${n <= state.newReviewRating ? 'active' : ''}" data-star="${n}">*</button>`).join('');
     row.querySelectorAll('.star-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         state.newReviewRating = Number(btn.dataset.star);
@@ -387,7 +429,7 @@
       <div class="appt-row">
         <div>
           <div class="appt-name">${a.name}</div>
-          <div class="appt-meta">${a.service} · ${a.date} · ${a.time}</div>
+          <div class="appt-meta">${a.service} - ${a.date} - ${a.time}</div>
         </div>
         <div class="appt-right">
           <div class="appt-badge ${a.status}">${statusLabel(a.status)}</div>
@@ -466,7 +508,7 @@
   }
 
   // ============================================================
-  // CHAT DEL HERO — interfaz lista para conectar a una IA real.
+  // CHAT DEL HERO - interfaz lista para conectar a una IA real.
   // Por ahora usa respuestas enlatadas (sin backend) para dejar
   // toda la experiencia armada: burbujas, sugerencias, "escribiendo...".
   // ============================================================
@@ -503,28 +545,51 @@
     return typing;
   }
 
-  // Respuestas de demostración — reemplazar por la IA real cuando esté conectada.
+  // Respuestas de demostracion - reemplazar por la IA real cuando este conectada.
+  // Nota: las respuestas usan conocimiento real de como funciona un tratamiento
+  // de ortodoncia (aparato fijo/removible, contencion, microtornillos, etc.)
+  // pero sin citar valores del arancel interno - los precios exactos siempre
+  // se dan en la evaluacion o estan en las tarjetas de Brackets.
   function canned(question) {
     const q = question.toLowerCase();
-    if (q.includes('cotizar') && q.includes('brackets') || q.includes('brackets estéticos')) {
-      return { text: 'Los Brackets Estéticos parten en $890.000, tratamiento integral con control mensual incluido. ¿Quieres que agendemos tu evaluación para confirmar el valor exacto de tu caso?', cta: 'Cotizar brackets', action: () => openBooking('brackets') };
+
+    if (q.includes('primera consulta') || q.includes('consulta gratis') || q.includes('evaluacion gratis') || q.includes('evaluacion gratis') || (q.includes('consulta') && (q.includes('cuesta') || q.includes('costo') || q.includes('vale')))) {
+      return { text: 'La primera consulta (evaluacion) no tiene costo. Ahi revisamos tu caso, te explicamos el plan de tratamiento recomendado y su valor exacto.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
+    }
+    if (q.includes('cotizar') && q.includes('brackets') || q.includes('brackets esteticos')) {
+      return { text: 'Los Brackets Esteticos parten en $890.000, tratamiento integral con control mensual incluido. Tu primera consulta para confirmar el valor exacto de tu caso es gratis.', cta: 'Cotizar brackets', action: () => openBooking('brackets') };
     }
     if (q.includes('zafiro')) {
-      return { text: 'Los Brackets de Zafiro son prácticamente transparentes y muy resistentes, con el mismo seguimiento mensual de un ortodoncista especialista. Parten en $1.450.000 con 15% de descuento.', cta: 'Cotizar brackets de zafiro', action: () => openBooking('zafiro') };
+      return { text: 'Los Brackets de Zafiro son practicamente transparentes y muy resistentes, con el mismo seguimiento mensual de un ortodoncista especialista. Parten en $1.450.000 con 15% de descuento.', cta: 'Cotizar brackets de zafiro', action: () => openBooking('zafiro') };
     }
-    if (q.includes('demora') || q.includes('cuanto tiempo') || q.includes('duración')) {
-      return { text: 'Depende del caso: en promedio va de 8 a 24 meses. Con un diagnóstico digital te damos un plazo estimado desde la primera consulta.', cta: 'Agendar evaluación', action: () => openBooking('brackets') };
+    if (q.includes('cuota') || q.includes('mensualidad') || (q.includes('mensual') && !q.includes('brackets'))) {
+      return { text: 'El tratamiento con aparato fijo o removible se paga con una cuota de control mensual mientras dura el tratamiento. El valor exacto segun tu caso te lo confirmamos en la evaluacion inicial, que es gratuita.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
     }
-    if (q.includes('agendar') || q.includes('evaluación') || q.includes('evaluacion')) {
-      return { text: 'Perfecto, puedo abrirte el calendario para elegir fecha y hora ahora mismo.', cta: 'Elegir hora', action: () => openBooking('brackets') };
+    if (q.includes('microtornillo')) {
+      return { text: 'En algunos casos usamos microtornillos como anclaje esqueletico, para lograr movimientos dentales mas precisos. Se evalua caso a caso con nuestros ortodoncistas especialistas.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
     }
-    if (q.includes('niño') || q.includes('niña') || q.includes('infantil')) {
-      return { text: 'Sí — la Ortodoncia Infantil está pensada para diagnóstico temprano y guía del desarrollo facial, desde $180.000.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
+    if (q.includes('contencion') || q.includes('contencion') || q.includes('retenedor')) {
+      return { text: 'Al terminar el tratamiento activo se instala una contencion (fija o removible) para mantener los resultados, con controles periodicos incluidos.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
     }
-    if (q.includes('tipo de brackets') || q.includes('qué brackets') || q.includes('que brackets')) {
-      return { text: 'Trabajamos con Brackets Estéticos, Brackets de Zafiro y Ortodoncia Infantil, todos guiados por ortodoncistas especialistas certificados. Puedes ver el detalle y precio de cada uno tocando su tarjeta en la sección Brackets.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
+    if (q.includes('disyuntor') || q.includes('activador') || q.includes('ortoped') || q.includes('ortoped')) {
+      return { text: 'Para casos de crecimiento en ninos usamos aparatos ortopedicos (activadores, disyuntores, entre otros) que ayudan a guiar el desarrollo de los maxilares. Se define en la evaluacion de Ortodoncia Infantil.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
     }
-    return { text: 'Buena pregunta — nuestro equipo puede responderte en detalle por WhatsApp ahora mismo.', cta: 'Escribir por WhatsApp', action: () => window.open(WHATSAPP_LINK, '_blank') };
+    if (q.includes('prequirurgic') || q.includes('prequirurgic') || q.includes('quirurgic') || q.includes('quirurgia')) {
+      return { text: 'En casos que requieren cirugia ortognatica, hacemos ortodoncia prequirurgica: preparamos la posicion de tus dientes antes de la cirugia junto a tu cirujano maxilofacial.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
+    }
+    if (q.includes('demora') || q.includes('cuanto tiempo') || q.includes('duracion')) {
+      return { text: 'Depende del caso: en promedio va de 8 a 24 meses. Con un diagnostico digital te damos un plazo estimado desde la primera consulta, que es gratuita.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
+    }
+    if (q.includes('agendar') || q.includes('evaluacion') || q.includes('evaluacion')) {
+      return { text: 'Perfecto - la primera consulta es una evaluacion sin costo. Puedo abrirte el calendario para elegir fecha y hora ahora mismo.', cta: 'Elegir hora', action: () => openBooking('evaluacion') };
+    }
+    if (q.includes('nino') || q.includes('nina') || q.includes('infantil')) {
+      return { text: 'Si - la Ortodoncia Infantil esta pensada para diagnostico temprano y guia del desarrollo facial, desde $180.000. La evaluacion inicial es gratuita.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
+    }
+    if (q.includes('tipo de brackets') || q.includes('que brackets') || q.includes('que brackets')) {
+      return { text: 'Trabajamos con Brackets Esteticos, Brackets de Zafiro y Ortodoncia Infantil, todos guiados por ortodoncistas especialistas certificados. Puedes ver el detalle y precio de cada uno tocando su tarjeta en la seccion Brackets.', cta: 'Ver brackets', action: () => { document.getElementById('brackets').scrollIntoView({ behavior: 'smooth' }); } };
+    }
+    return { text: 'Buena pregunta - nuestro equipo puede responderte en detalle por WhatsApp ahora mismo.', cta: 'Escribir por WhatsApp', action: () => window.open(WHATSAPP_LINK, '_blank') };
   }
 
   function sendQuestion(question) {
