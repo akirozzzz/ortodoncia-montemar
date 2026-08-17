@@ -151,24 +151,22 @@
     const isFree = plan.price === 0;
     $('payment-plan-name').textContent = plan.name;
     $('payment-plan-price').textContent = isFree ? 'Sin costo' : plan.finalPriceLabel;
-    $('payment-ssl-row').style.display = isFree ? 'none' : '';
-    $('submit-payment-label').textContent = isFree ? 'Confirmar hora' : 'Pagar con Fintoc';
-    $('submit-payment-price').textContent = isFree ? '' : plan.finalPriceLabel;
     $('payment-fintoc-note').textContent = isFree
       ? 'Es tu primera consulta: no tiene costo. Solo confirmamos tus datos y la hora.'
-      : 'Te llevamos a la pasarela segura de Fintoc para completar el pago.';
+      : 'Confirmamos tu hora sin pago online. El pago se coordina directamente contigo (efectivo, transferencia o en la clinica).';
     setBookingStep('payment');
   });
 
   $('patient-name').addEventListener('input', (e) => { state.patientName = e.target.value; });
   $('patient-email').addEventListener('input', (e) => { state.patientEmail = e.target.value; });
 
-  // ---------- Pago real con Fintoc ----------
-  // Creamos la reserva + una Checkout Session en el servidor
-  // (api/payments/create-checkout-session.js) y redirigimos el navegador a
-  // la pasarela hospedada de Fintoc. El resultado final lo confirma el
-  // webhook de Fintoc; por eso al volver del pago consultamos
-  // /api/bookings/status en checkPaymentReturn().
+  // ---------- Reserva sin pago online ----------
+  // No usamos Fintoc: no cumplimos los requisitos que exige la pasarela
+  // para operar. Toda reserva (evaluacion gratis o un plan pagado como
+  // Brackets) se confirma directo contra api/bookings/create-free, sin
+  // pasar por ningun checkout. El pago de los planes pagados se coordina
+  // despues, directamente con el paciente (efectivo, transferencia o en
+  // la clinica) - no en el sitio.
   $('submit-payment').addEventListener('click', async () => {
     const plan = selectedPlan();
     if (!plan) return;
@@ -182,39 +180,10 @@
     const btn = $('submit-payment');
     const label = $('submit-payment-label');
     btn.disabled = true;
-    label.textContent = isFree ? 'Confirmando...' : 'Redirigiendo a Fintoc...';
-
-    // Evaluacion gratuita: no pasa por Fintoc, se confirma directo.
-    if (isFree) {
-      try {
-        const res = await fetch('/api/bookings/create-free', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            serviceId: plan.id,
-            patientName: name,
-            patientEmail: (state.patientEmail || '').trim() || undefined,
-            date: state.selectedDate,
-            time: state.selectedTime
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'No se pudo agendar la hora');
-        $('success-title').textContent = 'Evaluacion agendada';
-        $('success-text').textContent = 'Te esperamos en tu horario elegido. Es tu primera consulta y no tiene costo - ahi evaluamos tu caso y te damos el plan de tratamiento recomendado.';
-        setBookingStep('success');
-        btn.disabled = false;
-        label.textContent = 'Confirmar hora';
-      } catch (err) {
-        alert('No se pudo agendar tu hora. Intenta nuevamente o escribenos por WhatsApp.');
-        btn.disabled = false;
-        label.textContent = 'Confirmar hora';
-      }
-      return;
-    }
+    label.textContent = 'Confirmando...';
 
     try {
-      const res = await fetch('/api/payments/create-checkout-session', {
+      const res = await fetch('/api/bookings/create-free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -226,66 +195,23 @@
         })
       });
       const data = await res.json();
-      if (!res.ok || !data.checkoutUrl) throw new Error(data.error || 'Error al iniciar el pago');
-      window.location.href = data.checkoutUrl;
+      if (!res.ok) throw new Error(data.error || 'No se pudo agendar la hora');
+      $('success-title').textContent = isFree ? 'Evaluacion agendada' : 'Reserva confirmada';
+      $('success-text').textContent = isFree
+        ? 'Te esperamos en tu horario elegido. Es tu primera consulta y no tiene costo - ahi evaluamos tu caso y te damos el plan de tratamiento recomendado.'
+        : 'Te esperamos en tu horario elegido. Coordinamos el pago directamente contigo (efectivo, transferencia o en la clinica) - nuestro equipo te contacta para confirmar los detalles.';
+      setBookingStep('success');
     } catch (err) {
-      alert('No se pudo iniciar el pago. Intenta nuevamente o escribenos por WhatsApp.');
+      alert('No se pudo agendar tu hora. Intenta nuevamente o escribenos por WhatsApp.');
+    } finally {
       btn.disabled = false;
-      label.textContent = 'Pagar con Fintoc';
+      label.textContent = 'Confirmar hora';
     }
   });
 
-  // ---------- Regreso desde la pasarela de Fintoc ----------
-  async function checkPaymentReturn() {
-    const params = new URLSearchParams(window.location.search);
-    const bookingId = params.get('booking');
-    const pago = params.get('pago');
-    if (!bookingId || !pago) return;
-
-    window.history.replaceState({}, '', window.location.pathname);
-    bookingModal.classList.add('open');
-    setBookingStep('success');
-
-    const titleEl = $('success-title');
-    const textEl = $('success-text');
-
-    if (pago === 'cancelado') {
-      titleEl.textContent = 'Pago no completado';
-      textEl.textContent = 'No alcanzaste a terminar el pago. Podes intentarlo de nuevo cuando quieras desde Brackets.';
-      return;
-    }
-
-    titleEl.textContent = 'Confirmando tu pago...';
-    textEl.textContent = 'Danos un momento mientras confirmamos el pago con Fintoc.';
-
-    for (let i = 0; i < 8; i += 1) {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      try {
-        const res = await fetch(`/api/bookings/status?id=${encodeURIComponent(bookingId)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status === 'paid') {
-            titleEl.textContent = 'Reserva confirmada';
-            textEl.textContent = 'Te enviamos el detalle a tu correo. Tu hora quedara confirmada por el equipo dentro de 24 horas.';
-            return;
-          }
-          if (data.status === 'failed') {
-            titleEl.textContent = 'El pago no se pudo procesar';
-            textEl.textContent = 'Intenta nuevamente o escribenos por WhatsApp para ayudarte.';
-            return;
-          }
-        }
-      } catch (err) {
-        // seguimos intentando
-      }
-    }
-    titleEl.textContent = 'Estamos confirmando tu pago';
-    textEl.textContent = 'Puede tardar unos minutos. Te avisaremos por correo apenas quede confirmado.';
-  }
-
   // hero + brackets CTAs
   // El boton del hero lleva a la evaluacion (primera consulta), que es gratis.
-  // El de Brackets lleva a cotizar un tratamiento especifico (pago con Fintoc).
+  // El de Brackets lleva a cotizar un tratamiento especifico (sin pago online).
   $('hero-cta-agendar').addEventListener('click', () => openBooking('evaluacion'));
   $('brackets-cotizar-btn').addEventListener('click', () => openBooking('brackets'));
 
@@ -574,7 +500,7 @@
     if (q.includes('disyuntor') || q.includes('activador') || q.includes('ortoped') || q.includes('ortoped')) {
       return { text: 'Para casos de crecimiento en ninos usamos aparatos ortopedicos (activadores, disyuntores, entre otros) que ayudan a guiar el desarrollo de los maxilares. Se define en la evaluacion de Ortodoncia Infantil.', cta: 'Cotizar ortodoncia infantil', action: () => openBooking('kids') };
     }
-    if (q.includes('prequirurgic') || q.includes('prequirurgic') || q.includes('quirurgic') || q.includes('quirurgia')) {
+    if (q.includes('prequirurgic') || q.includes('prequirurgic') || q.includes('quirurgia') || q.includes('quirurgia')) {
       return { text: 'En casos que requieren cirugia ortognatica, hacemos ortodoncia prequirurgica: preparamos la posicion de tus dientes antes de la cirugia junto a tu cirujano maxilofacial.', cta: 'Agendar evaluacion gratis', action: () => openBooking('evaluacion') };
     }
     if (q.includes('demora') || q.includes('cuanto tiempo') || q.includes('duracion')) {
@@ -617,5 +543,4 @@
   // ---------- init ----------
   renderReviews();
   renderStats();
-  checkPaymentReturn();
 })();
